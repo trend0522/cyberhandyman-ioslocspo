@@ -118,11 +118,6 @@ body {
 .error-banner { background:linear-gradient(180deg,rgba(255,91,96,.18),rgba(255,91,96,.08)); border:1px solid rgba(255,91,96,.5); border-left:4px solid var(--red); color:#ffdcdc; padding:14px 16px; border-radius:12px; margin-bottom:12px; font-size:13.5px; line-height:1.6; display:none; }
 .error-banner b { display:block; margin-bottom:4px; color:#ff6b70; font-size:14.5px; }
 
-/* --- 斜向浮水印 --- */
-.wm { position:fixed; inset:0; z-index:9998; pointer-events:none; overflow:hidden; user-select:none; -webkit-user-select:none; }
-.wm-i { position:absolute; inset:-60%; display:flex; flex-wrap:wrap; align-content:flex-start; transform:rotate(-24deg); opacity:.11; }
-.wm-i span { flex:none; padding:26px 30px; font-size:17.5px; font-weight:800; white-space:nowrap; color:#8fe0e6; letter-spacing:.4px; text-shadow:0 1px 3px rgba(0,0,0,.5); }
-
 .toast { position:fixed; top:60px; left:50%; transform:translateX(-50%); background:rgba(8,10,14,.92); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border:1px solid var(--line); color:#fff; padding:11px 20px; border-radius:22px; font-size:14px; opacity:0; transition:opacity .3s; pointer-events:none; z-index:9999; max-width:90vw; text-align:center; box-shadow:0 8px 28px rgba(0,0,0,.5); }
 .toast.show { opacity:1; }
 
@@ -254,7 +249,6 @@ body {
   </div>
   <div class="status" id="status">選好位置後點擊「儲存到裝置」寫入代理工具</div>
 </div>
-<div class="wm" id="wm" aria-hidden="true"><div class="wm-i" id="wmi"></div></div>
 <div class="toast" id="toast"></div>
 <div class="modal-overlay" id="favModal">
   <div class="modal">
@@ -546,14 +540,14 @@ function copyText(str) {
 }
 
 function copyField(which, btn) {
-  if (!selected) { toast(t('pick_first')); return; }
+  if (!selected) { toast =(t('pick_first')); return; }
   let val;
   if (which === 'lat') val = lat.toFixed(6);
   else if (which === 'lon') val = lon.toFixed(6);
   else { const a = currentAlt(); if (a === null) { toast(t('alt_na')); return; } val = String(a); }
   copyText(val).then(() => {
     toast(t('copied', val));
-    if (btn) { const o = btn.textContent; btn.classList.add('success'); btn.textContent = '✓'; setTimeout(() => { btn.textContent = o; btn.classList.remove('success'); }, 1200); }
+    if (btn) { const o btn.textContent; btn.classList.add('success'); btn.textContent = '✓'; setTimeout(() => { btn.textContent = o; btn.classList.remove('success'); }, 1200); }
   }).catch(() => toast(t('copy_failed'), 3000));
 }
 
@@ -839,30 +833,6 @@ document.addEventListener('paste', e => {
 document.getElementById('searchInput').addEventListener('keydown', e => { if(e.key==='Enter') searchPlace(); });
 document.getElementById('urlInput').addEventListener('keydown', e => { if(e.key==='Enter') parseUrl(); });
 document.getElementById('favNameInput').addEventListener('keydown', e => { if(e.key==='Enter') confirmFav(); });
-
-/* ---- 浮水印 ---- */
-const WM_TEXT = 'YouTube：賽博工具人 @CyberHandyman 根據 GitHub 開源專案製作';
-function buildWM() {
-  let host = document.getElementById('wm');
-  if (!host) { host = document.createElement('div'); host.id = 'wm'; host.className = 'wm'; host.setAttribute('aria-hidden','true'); document.body.appendChild(host); }
-  host.className = 'wm'; host.removeAttribute('style');
-  const n = Math.ceil((window.innerWidth * window.innerHeight) / 12000) + 40;
-  let s = '';
-  for (let i = 0; i < n; i++) s += '<span>' + WM_TEXT + '<\\/span>';
-  host.innerHTML = '<div class="wm-i" id="wmi">' + s + '<\\/div>';
-}
-function ensureWM() {
-  const host = document.getElementById('wm'), inner = document.getElementById('wmi');
-  if (!host || !inner || inner.textContent.indexOf('CyberHandyman') < 0) { buildWM(); return; }
-  const ch = getComputedStyle(host), ci = getComputedStyle(inner);
-  if (ch.display === 'none' || ch.visibility === 'hidden' || ch.position !== 'fixed' || parseFloat(ci.opacity) < 0.03) {
-    host.removeAttribute('style'); inner.removeAttribute('style'); buildWM();
-  }
-}
-buildWM();
-try { new MutationObserver(ensureWM).observe(document.body, { childList: true }); } catch(e) {}
-setInterval(ensureWM, 1500);
-window.addEventListener('resize', buildWM);
 
 applyI18n();
 queryActive();
