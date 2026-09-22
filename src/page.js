@@ -35,11 +35,8 @@ body {
 /* ---- 頂部列 ---- */
 .topbar { position:sticky; top:0; z-index:1200; display:flex; align-items:center; gap:10px; padding:9px 12px; background:rgba(255,255,255,.92); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); border-bottom:1px solid var(--line); font-size:11px; color:var(--muted); }
 .topbar .back { flex:none; color:var(--cyan); font-weight:700; text-decoration:none; }
-.topbar .topcredit { flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.topbar .topcredit a { color:var(--cyan); text-decoration:none; font-weight:700; }
-.topbar .topcredit .ytname { font-size:13.5px; font-weight:800; color:var(--red); }
-.topbar .topcredit .forkline { font-size:10.5px; color:var(--muted); }
-.topbar .topcredit .forkline .v11 { color:var(--green); font-weight:700; }
+.topbar .topcredit { flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:center; }
+.topbar .topcredit .title { font-size:14px; font-weight:800; color:var(--txt); letter-spacing:.3px; }
 
 /* ---- 地圖 ---- */
 #map { height:56vh; width:100%; min-height:300px; background:#f2f2f7; border-bottom:1px solid var(--line); }
@@ -148,7 +145,7 @@ body {
 <body>
 <div class="topbar">
   <a class="back" href="/">← 首頁</a>
-  <span class="topcredit">📺 <a class="ytname" href="https://www.youtube.com/@CyberHandyman/videos" target="_blank" rel="noopener">YouTube CyberHandyman 賽博工具人</a><span class="forkline"> · fork from 鳴謝貢獻者: Yu9191 / mekos2772 / acheong08 <span class="v11">· 已同步 Yu9191 v1.1</span></span></span>
+  <span class="topcredit"><span class="title">iOS Location Spoofer 定位修改</span></span>
 </div>
 <div style="position:relative">
 <div id="map"></div>
