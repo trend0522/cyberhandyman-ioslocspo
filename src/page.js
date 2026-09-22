@@ -197,13 +197,13 @@ body {
       <input id="urlInput" data-i18n-ph="paste_ph" placeholder="Apple／Google／高德／百度地圖連結或經緯度" />
       <button class="btn btn-secondary" style="flex:none;min-width:56px" data-i18n="parse" onclick="parseUrl()">解析</button>
     </div>
-    <div style="font-size:11px;color:var(--gray);margin-top:6px" data-i18n="paste_hint">支援 Apple Maps · Google Maps"> · 高德 · 百度 · 座標文字（自動轉換為 WGS-84）</div>
+    <div style="font-size:11px;color:var(--gray);margin-top:6px" data-i18n="paste_hint">支援 Apple Maps · Google Maps · 高德 · 百度 · 座標文字（自動轉換為 WGS-84）</div>
   </div>
   <div class="card">
     <h3 data-i18n="search_title">搜尋地點</h3>
     <div class="input-row">
       <input id="searchInput" data-i18n-ph="search_ph" placeholder="搜尋地名，按 Enter 列出候選（僅預覽，不修改定位）" />
-      <button class="btn btn-secondary" style="flex:none;min-width:56px" data-i18n="search" onclick="searchPlace()搜尋</button>
+      <button class="btn btn-secondary" style="flex:none;min-width:56px" data-i18n="search" onclick="searchPlace()">搜尋</button>
     </div>
     <div id="searchResults" class="search-results"></div>
   </div>
@@ -236,7 +236,6 @@ const elevCache = new Map();
 let activeLon = null, activeLat = null, activeAcc = null, activeAlt = null, activeStatus = 'querying';
 let savedLon = null, savedLat = null, savedTimeStr = '';
 
-// 檢查 Leaflet 是否載入成功
 if (typeof L === 'undefined') {
   document.getElementById('map').innerHTML = '<div style="text-align:center; color:#d62f37; font-size:14px; padding:20px; font-weight:700;">⚠️ 地圖元件載入失敗<br><span style="font-size:12px;color:#64748b;font-weight:normal;">請檢查網路，或將 unpkg.com 加入代理規則。您仍可在下方手動輸入座標。</span></div>';
 }
@@ -302,9 +301,9 @@ const I18N = {
     copy: 'Copy', copy_params: 'Copy module params',
     lat: 'Lat', lon: 'Lon', alt: 'Alt',
     alt_querying: 'querying altitude…', alt_na: 'altitude unavailable',
-    alt_hint: 'Altitude is auto-filled from Open-Meteo (WGS-84), written to the device on Save, and applied by the iOS Location Spoofer module.',
-    acc_note_html: '<b>Choosing the accuracy values</b>' +
-      '<code>horizontalAccuracy</code> in metres, default <em>39</em> — the smaller, the more "precise" it looks. Set <em>5–15</em> to look more like GPS; <em>39</em> is perfectly fine too.<br>' +
+    alt_hint: 'Altitude is auto-filled from Open-Meteo (WGS-84), written to the device on Save, and applied by the iOS +
+ Location Spoofer module.',
+    acc_note_html: '<     b>Choosing the accuracy values '<</b>'code>horizontalAccuracy</code> in metres, default <em>39</em> — the smaller, the more "precise" it looks. Set <em>5–15</em> to look more like GPS; <em>39</em> is perfectly fine too.<br>' +
       '<code>verticalAccuracy</code> in metres, default <em>1000</em> — this page already fills in the target\\'s real altitude, so lowering it to <em>10–30</em> makes that altitude look more credible.<br>' +
       '<code>Jitter radius</code> in metres, default <em>0</em> (off) — set to <em>N</em> and each positioning is randomly offset within <em>N</em> m of the target, so results are never identical. Leave <em>0</em> to stay pinned to the exact point.' +
       '<span class="src">Guidance from the upstream project mekos2772 / ios-location-spoofer</span>',
@@ -378,7 +377,6 @@ function setLang(l) {
   applyI18n();
 }
 
-// 只有在 Leaflet 載入成功時才初始化地圖
 let map = null;
 if (typeof L !== 'undefined') {
   map = L.map('map').setView([20, 0], 2);
@@ -405,7 +403,6 @@ if (typeof L !== 'undefined') {
   map.on('click', e => { setPos(e.latlng.lat, e.latlng.lng); });
 }
 
-// 讓輸入框與變數同步（即使手動輸入也能生效）
 document.getElementById('cvLat').addEventListener('input', function(e) { lat = parseFloat(e.target.value) || 0; });
 document.getElementById('cvLon').addEventListener('input', function(e) { lon = parseFloat(e.target.value) || 0; });
 
@@ -647,17 +644,17 @@ function queryActive() {
         activeLat = parseFloat(d.latitude);
         activeAcc = (d.horizontalAccuracy != null ? d.horizontalAccuracy : (d.accuracy || null));
         activeAlt = (d.altitude !== undefined && d.altitude !== null) ? d.altitude : null;
-        if (d.randomRadius != null) { const ji = document.getElementById('jitterInput'); if (ji) ji.value = d.randomRadius; }
+        if (d.randomRadius != null) { const ji = document.getElementById }
+('jitterInput'); if (ji) ji.value = d.randomRadius     ; }
         activeStatus = 'ok';
-        if (!didInitialCenter && !selected) {
+        if (! renderdidInitialCenter && !selected) {
           didInitialCenter = true;
-          moveTo(activeLat, activeLon, 15, (activeAlt !== null && activeAlt !== undefined) ? activeAlt : undefined);
+          moveActiveTo(activeLat, activeLon, 15, (activeAlt !== null && activeAlt !== undefined) ? activeAlt : undefined);
         }
       } else {
         activeLon = null; activeLat = null; activeAcc = null; activeAlt = null;
         activeStatus = 'none';
-      }
-      renderActive();
+     ();
       renderFavs();
     })
     .catch(() => { activeStatus = 'failed'; renderActive(); });
