@@ -13,14 +13,14 @@ export function getPageHtml() {
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icon-180.png">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script>
+<!-- 改用 cdnjs 的 Leaflet，穩定性較高，避免被代理工具阻擋 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"><\/script>
 <style>
 :root {
   --bg:#f4f6fa; --card:#ffffff; --card2:#f0f3f8; --line:#e4e8ef; --inset:#f7f9fc;
   --brand:#2b7de9; --brand2:#1c62c4; --green:#10b981; --red:#ef4444; --orange:#f59e0b;
   --txt:#1e293b; --muted:#64748b; --mono:#0b8ce0;
-  /* legacy aliases */
   --blue:#2b7de9; --gray:#64748b; --cyan:#2b7de9; --cyan2:#1c62c4;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -34,7 +34,6 @@ body {
 ::-webkit-scrollbar { width:6px; height:6px; }
 ::-webkit-scrollbar-thumb { background:#cfd6e0; border-radius:3px; }
 
-/* ---- map ---- */
 .map-wrap { position:relative; padding-top: env(safe-area-inset-top); }
 #map { height:50vh; width:100%; min-height:250px; background:#e9edf3; border-bottom:1px solid var(--line); }
 .leaflet-container { background:#e9edf3; }
@@ -45,8 +44,6 @@ body {
 .leaflet-control-attribution a { color:var(--muted)!important; }
 
 .panel { padding:16px; max-width:600px; margin:0 auto; padding-bottom:calc(16px + env(safe-area-inset-bottom)); }
-
-/* ---- cards ---- */
 .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:12px; box-shadow:0 2px 10px rgba(15,25,45,.04); }
 .card h3 { font-size:15px; font-weight:700; margin-bottom:12px; color:var(--txt); display:flex; align-items:center; gap:8px; }
 .card h3::before { content:""; width:3px; height:15px; border-radius:2px; background:linear-gradient(180deg,var(--brand),#5ba0f0); flex:none; }
@@ -57,7 +54,6 @@ body {
 .crow .cv { flex:1; min-width:0; font-family:"SF Mono",ui-monospace,monospace; font-size:14px; color:var(--mono); word-break:break-all; }
 .copybtn { flex:none; }
 
-/* ---- buttons ---- */
 .row { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
 .btn { flex:1; min-width:100px; padding:12px 16px; border:none; border-radius:11px; font-size:14px; font-weight:700; cursor:pointer; transition:all .15s; font-family:inherit; }
 .btn-primary { background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#fff; box-shadow:0 6px 16px rgba(43,125,233,.25); }
@@ -69,7 +65,6 @@ body {
 .btn.success { background:linear-gradient(135deg,#2fbf71,#158a4d); color:#fff; border:none; box-shadow:0 6px 16px rgba(16,185,129,.28); }
 .btn-sm { flex:none; min-width:auto; padding:6px 12px; font-size:12px; border-radius:8px; }
 
-/* ---- inputs ---- */
 .input-row { display:flex; gap:8px; margin-top:10px; }
 .input-row input { flex:1; padding:11px 12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; font-size:14px; color:var(--txt); outline:none; min-width:0; -webkit-appearance:none; font-family:inherit; transition:border-color .15s,box-shadow .15s; }
 .cvi { flex:1; min-width:0; width:100%; font-family:"SF Mono",ui-monospace,monospace; font-size:14px; color:var(--mono); padding:7px 10px; background:var(--inset); border:1px solid var(--line); border-radius:8px; outline:none; -webkit-appearance:none; transition:border-color .15s,box-shadow .15s; }
@@ -87,7 +82,6 @@ body {
 .accnote em { color:var(--txt); font-style:normal; font-weight:800; }
 .accnote .src { display:block; margin-top:8px; color:#9aa5b5; font-size:10.5px; }
 
-/* ---- lists ---- */
 .search-results { margin-top:8px; max-height:260px; overflow-y:auto; }
 .search-item { padding:11px 12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; margin-bottom:6px; cursor:pointer; transition:all .15s; }
 .search-item:active { background:#e9f2fe; border-color:var(--brand); }
@@ -97,7 +91,6 @@ body {
 .error-banner { background:#fff5f5; border:1px solid #f7c9cc; border-left:4px solid var(--red); color:#7a3b3e; padding:14px 16px; border-radius:12px; margin-bottom:12px; font-size:13.5px; line-height:1.7; display:none; }
 .error-banner b { display:block; margin-bottom:4px; color:#d62f37; font-size:14.5px; }
 
-/* ---- watermark ---- */
 .wm { position:fixed; inset:0; z-index:9998; pointer-events:none; overflow:hidden; user-select:none; -webkit-user-select:none; }
 .wm-i { position:absolute; inset:-60%; display:flex; flex-wrap:wrap; align-content:flex-start; transform:rotate(-24deg); opacity:.10; }
 .wm-i span { flex:none; padding:26px 30px; font-size:17.5px; font-weight:800; white-space:nowrap; color:#2b7de9; letter-spacing:.4px; }
@@ -122,7 +115,6 @@ body {
 .fav-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
 .fav-header h3 { margin-bottom:0; }
 
-/* ---- modal ---- */
 .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(15,25,45,.42); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); z-index:10000; display:none; align-items:center; justify-content:center; padding:20px; }
 .modal-overlay.show { display:flex; }
 .modal { background:#fff; border:1px solid var(--line); border-radius:18px; padding:22px; width:100%; max-width:340px; box-shadow:0 20px 60px rgba(15,25,45,.22); }
@@ -131,7 +123,6 @@ body {
 .modal .modal-btns { display:flex; gap:8px; }
 .modal .modal-btns .btn { padding:12px; }
 
-/* ---- map overlay switches ---- */
 .layer-switch { position:absolute; top:calc(10px + env(safe-area-inset-top)); right:10px; z-index:1000; display:flex; gap:4px; background:rgba(255,255,255,.92); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:10px; padding:4px; box-shadow:0 4px 14px rgba(15,25,45,.12); }
 .layer-btn { border:none; background:transparent; padding:6px 10px; border-radius:7px; font-size:12px; font-weight:600; color:#5b6779; cursor:pointer; transition:all .15s; white-space:nowrap; font-family:inherit; }
 .layer-btn.active { background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#fff; font-weight:700; }
@@ -251,7 +242,6 @@ const elevCache = new Map();
 let activeLon = null, activeLat = null, activeAcc = null, activeAlt = null, activeStatus = 'querying';
 let savedLon = null, savedLat = null, savedTimeStr = '';
 
-/* ---- i18n ---- */
 const I18N = {
   zh: {
     title: 'iOS 虛擬定位',
@@ -293,7 +283,6 @@ const I18N = {
     saving: '儲存中...', saved: '✓ 已儲存',
     written: function(lo, la, ts){ return '✓ 已寫入：' + lo.toFixed(6) + ', ' + la.toFixed(6) + ' · ' + ts; },
     saved_toast: '✓ 座標已成功寫入模組，定位服務開關關閉後，等待至少 10 秒鐘，再次開啟才會生效',
-    video_btn: '▶️ 影片教學（YouTube）',
     save_failed: '✗ 儲存失敗 - 請檢查模組設定', write_failed: '寫入失敗',
     no_geo: '瀏覽器不支援定位', getting_loc: '取得位置中...', got_loc: '已取得目前位置',
     loc_failed: function(m){ return '定位失敗：' + m; },
@@ -344,7 +333,6 @@ const I18N = {
     saving: 'Saving...', saved: '✓ Saved',
     written: function(lo, la, ts){ return '✓ Written: ' + lo.toFixed(6) + ', ' + la.toFixed(6) + ' · ' + ts; },
     saved_toast: '✓ Coordinates written to the module. Turn Location Services OFF, wait at least 10 seconds, then turn it back ON to take effect.',
-    video_btn: '▶️ Video tutorial (YouTube)',
     save_failed: '✗ Save failed - please check the module configuration', write_failed: 'Write failed',
     no_geo: 'Browser does not support geolocation', getting_loc: 'Getting location...', got_loc: 'Current location acquired',
     loc_failed: function(m){ return 'Location failed: ' + m; },
@@ -396,8 +384,8 @@ const tiles = {
   satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, attribution:'ArcGIS'}),
   wgs84: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, attribution:'ArcGIS WGS84'}),
   standard: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'\\u00a9 OSM'}),
-  dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {maxZoom:19, attribution:'\\u00a9 Carto'}),
-  amap: L.tileLayer('https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}', {maxZoom:18, subdomains:'1234', attribution:'\\u00a9 Amap'}),
+  dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png const', {maxZoom:19, attribution:'\\u co00a9 Carto'}),
+  amords =ap: L.tileLayer('https:// documentwebst0{s}.is.autonavi.com/appmaptile?style.getElementById=6&x={x}&y={y}&z={z}', {maxZoom:18, subdomains:'1234', attribution:'\\u00a9 Amap'}),
   voyager: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom:19, attribution:'\\u00a9 Carto'})
 };
 let currentLayer = tiles.satellite;
@@ -427,14 +415,13 @@ function jitterVal() { const n = parseInt((document.getElementById('jitterInput'
 function setAltInput(v) {
   const el = document.getElementById('altInput');
   if (!el) return;
-  if (v === null) { el.value = ''; el.placeholder = {
- t('alt_na'); }
-  else { el.value = v   ; el.placeholder = ''; }
+  if (v === null) { el.value = ''; el.placeholder = t('alt_na'); }
+  else { el.value = v; el.placeholder = ''; }
 }
 
 function updateCoords() {
   const grid = document.getElementById('coordGrid');
-  const coords = document.getElementById('coords');
+ ('coords');
   if (!selected) {
     grid.style.display = 'none';
     coords.style.display = '';
@@ -458,7 +445,7 @@ function setPos(newLat, newLon, knownAlt) {
   showMarker();
   marker.setLatLng([lat, lon]);
   if (typeof knownAlt === 'number') { elev = Math.round(knownAlt); elevState = 'ok'; elevCache.set(elevKey(lat, lon), elev); }
-  updateCoords toast();
+  updateCoords();
   fetchElevation(lat, lon);
 }
 
@@ -521,7 +508,8 @@ function copyField(which, btn) {
   if (which === 'lat') val = lat.toFixed(6);
   else if (which === 'lon') val = lon.toFixed(6);
   else { const a = currentAlt(); if (a === null) { toast(t('alt_na')); return; } val = String(a); }
-  copyText(val).then(() =>(t('copied', val));
+  copyText(val).then(() => {
+    toast(t('copied', val));
     if (btn) { const o = btn.textContent; btn.classList.add('success'); btn.textContent = '✓'; setTimeout(() => { btn.textContent = o; btn.classList.remove('success'); }, 1200); }
   }).catch(() => toast(t('copy_failed'), 3000));
 }
