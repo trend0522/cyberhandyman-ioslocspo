@@ -90,10 +90,6 @@ body {
 .error-banner { background:#fff5f5; border:1px solid #f7c9cc; border-left:4px solid var(--red); color:#7a3b3e; padding:14px 16px; border-radius:12px; margin-bottom:12px; font-size:13.5px; line-height:1.7; display:none; }
 .error-banner b { display:block; margin-bottom:4px; color:#d62f37; font-size:14.5px; }
 
-.wm { position:fixed; inset:0; z-index:9998; pointer-events:none; overflow:hidden; user-select:none; -webkit-user-select:none; }
-.wm-i { position:absolute; inset:-60%; display:flex; flex-wrap:wrap; align-content:flex-start; transform:rotate(-24deg); opacity:.10; }
-.wm-i span { flex:none; padding:26px 30px; font-size:17.5px; font-weight:800; white-space:nowrap; color:#2b7de9; letter-spacing:.4px; }
-
 .toast { position:fixed; top:60px; left:50%; transform:translateX(-50%); background:rgba(30,41,59,.94); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); color:#fff; padding:11px 20px; border-radius:22px; font-size:14px; opacity:0; transition:opacity .3s; pointer-events:none; z-index:9999; max-width:90vw; text-align:center; box-shadow:0 8px 26px rgba(15,25,45,.28); }
 .toast.show { opacity:1; }
 
@@ -145,7 +141,7 @@ body {
   <button class="layer-btn active" data-layer="satellite" data-i18n="layer_satellite" onclick="switchLayer('satellite')">衛星</button>
   <button class="layer-btn" data-layer="wgs84" onclick="switchLayer('wgs84')">WGS84</button>
   <button class="layer-btn" data-layer="amap" data-i18n="layer_amap" onclick="switchLayer('amap')">高德</button>
-  <button class="layer-btn" data-layer="voyager" data-i18n="layer_color" onclick="switchLayer('voyager')">彩色</button>
+  <button class="layer-btn" data-layer="voyager" data-i18n="layer_color" onclick="switchLayer('voyager')">地形</button>
   <button class="layer-btn" data-layer="standard" data-i18n="layer_standard" onclick="switchLayer('standard')">標準</button>
   <button class="layer-btn" data-layer="dark" data-i18n="layer_dark" onclick="switchLayer('dark')">暗色</button>
 </div>
@@ -155,7 +151,6 @@ body {
   <div class="card">
     <h3 data-i18n="choose_title">選擇目標位置</h3>
     <div class="coords" id="coords" data-i18n="coords_hint">點擊地圖或使用下方工具選擇位置</div>
-    <!-- 修正：移除了 display:none，讓輸入框預設顯示 -->
     <div id="coordGrid">
       <div class="crow"><span class="ck" data-i18n="lat">緯度</span><input class="cvi" id="cvLat" type="number" step="0.000001" placeholder="latitude" /><button class="btn btn-sm btn-secondary copybtn" data-i18n="copy" onclick="copyField('lat',this)">複製</button></div>
       <div class="crow"><span class="ck" data-i18n="lon">經度</span><input class="cvi" id="cvLon" type="number" step="0.000001" placeholder="longitude" /><button class="btn btn-sm btn-secondary copybtn" data-i18n="copy" onclick="copyField('lon',this)">複製</button></div>
@@ -202,19 +197,18 @@ body {
       <input id="urlInput" data-i18n-ph="paste_ph" placeholder="Apple／Google／高德／百度地圖連結或經緯度" />
       <button class="btn btn-secondary" style="flex:none;min-width:56px" data-i18n="parse" onclick="parseUrl()">解析</button>
     </div>
-    <div style="font-size:11px;color:var(--gray);margin-top:6px" data-i18n="paste_hint">支援 Apple Maps · Google Maps · 高德 · 百度 · 座標文字（自動轉換為 WGS-84）</div>
+    <div style="font-size:11px;color:var(--gray);margin-top:6px" data-i18n="paste_hint">支援 Apple Maps · Google Maps"> · 高德 · 百度 · 座標文字（自動轉換為 WGS-84）</div>
   </div>
   <div class="card">
     <h3 data-i18n="search_title">搜尋地點</h3>
     <div class="input-row">
       <input id="searchInput" data-i18n-ph="search_ph" placeholder="搜尋地名，按 Enter 列出候選（僅預覽，不修改定位）" />
-      <button class="btn btn-secondary" style="flex:none;min-width:56px" data-i18n="search" onclick="searchPlace()">搜尋</button>
+      <button class="btn btn-secondary" style="flex:none;min-width:56px" data-i18n="search" onclick="searchPlace()搜尋</button>
     </div>
     <div id="searchResults" class="search-results"></div>
   </div>
   <div class="status" id="status">選好位置後點擊「儲存到裝置」寫入代理工具</div>
 </div>
-<div class="wm" id="wm" aria-hidden="true"><div class="wm-i" id="wmi"></div></div>
 <div class="toast" id="toast"></div>
 <div class="modal-overlay" id="favModal">
   <div class="modal">
@@ -242,7 +236,7 @@ const elevCache = new Map();
 let activeLon = null, activeLat = null, activeAcc = null, activeAlt = null, activeStatus = 'querying';
 let savedLon = null, savedLat = null, savedTimeStr = '';
 
-// 檢查 Leaflet 是否載入成功，若失敗直接顯示提示，避免整段 JS 崩潰
+// 檢查 Leaflet 是否載入成功
 if (typeof L === 'undefined') {
   document.getElementById('map').innerHTML = '<div style="text-align:center; color:#d62f37; font-size:14px; padding:20px; font-weight:700;">⚠️ 地圖元件載入失敗<br><span style="font-size:12px;color:#64748b;font-weight:normal;">請檢查網路，或將 unpkg.com 加入代理規則。您仍可在下方手動輸入座標。</span></div>';
 }
@@ -250,7 +244,7 @@ if (typeof L === 'undefined') {
 const I18N = {
   zh: {
     title: 'iOS 虛擬定位',
-    layer_satellite: '衛星', layer_amap: '高德', layer_color: '彩色', layer_standard: '標準', layer_dark: '暗色',
+    layer_satellite: '衛星', layer_amap: '高德', layer_color: '地形', layer_standard: '標準', layer_dark: '暗色',
     err_html: '<b>模組未生效</b>請檢查以下設定：<br>1. 已安裝並啟用 iOS Location Spoofer 模組<br>2. MITM 已開啟且信任憑證<br>3. MITM 主機名稱包含 gs-loc.apple.com<br>4. 目前網路已走代理',
     choose_title: '選擇目標位置',
     coords_hint: '點擊地圖或使用下方工具選擇位置',
@@ -288,8 +282,8 @@ const I18N = {
     saving: '儲存中...', saved: '✓ 已儲存',
     written: function(lo, la, ts){ return '✓ 已寫入：' + lo.toFixed(6) + ', ' + la.toFixed(6) + ' · ' + ts; },
     saved_toast: '✓ 座標已成功寫入模組，定位服務開關關閉後，等待至少 10 秒鐘，再次開啟才會生效',
-    save_failed: '✗ 儲存失敗 - 請檢查模組設定位置', write_failed: '中寫入失敗',
-    no_geo:... '瀏覽器不',支援定位', getting_loc: '取得 got_loc: '已取得目前位置',
+    save_failed: '✗ 儲存失敗 - 請檢查模組設定', write_failed: '寫入失敗',
+    no_geo: '瀏覽器不支援定位', getting_loc: '取得位置中...', got_loc: '已取得目前位置',
     loc_failed: function(m){ return '定位失敗：' + m; },
     paste_first: '請貼上地圖連結或座標', parse_failed: '無法解析座標，請檢查連結格式', parsing: '解析中...',
     parsed: function(lo, la){ return '已解析：' + lo.toFixed(4) + ', ' + la.toFixed(4); },
@@ -300,7 +294,7 @@ const I18N = {
   },
   en: {
     title: 'iOS Location Spoofer',
-    layer_satellite: 'Satellite', layer_amap: 'Amap', layer_color: 'Color', layer_standard: 'Standard', layer_dark: 'Dark',
+    layer_satellite: 'Satellite', layer_amap: 'Amap', layer_color: 'Terrain', layer_standard: 'Standard', layer_dark: 'Dark',
     err_html: '<b>Module not active</b>Please check the following:<br>1. The iOS Location Spoofer module is installed and enabled<br>2. MITM is on and the certificate is trusted<br>3. The MITM hostname list includes gs-loc.apple.com<br>4. The current network is routed through the proxy',
     choose_title: 'Choose target location',
     coords_hint: 'Tap the map or use the tools below to pick a location',
@@ -391,10 +385,10 @@ if (typeof L !== 'undefined') {
   const tiles = {
     satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, attribution:'ArcGIS'}),
     wgs84: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, attribution:'ArcGIS WGS84'}),
-    standard: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'\\u00a9 OSM'}),
-    dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {maxZoom:19, attribution:'\\u00a9 Carto'}),
-    amap: L.tileLayer('https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}', {maxZoom:18, subdomains:'1234', attribution:'\\u00a9 Amap'}),
-    voyager: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom:19, attribution:'\\u00a9 Carto'})
+    standard: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OSM'}),
+    dark: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, attribution:'Esri Dark Gray'}),
+    amap: L.tileLayer('https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}', {maxZoom:18, subdomains:'1234', attribution:'© Amap'}),
+    voyager: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, attribution:'Esri Topo'})
   };
   let currentLayer = tiles.satellite;
   currentLayer.addTo(map);
@@ -805,29 +799,6 @@ document.addEventListener('paste', e => {
 document.getElementById('searchInput').addEventListener('keydown', e => { if(e.key==='Enter') searchPlace(); });
 document.getElementById('urlInput').addEventListener('keydown', e => { if(e.key==='Enter') parseUrl(); });
 document.getElementById('favNameInput').addEventListener('keydown', e => { if(e.key==='Enter') confirmFav(); });
-
-const WM_TEXT = 'YouTube：賽博工具人 @CyberHandyman 依據 GitHub 開源專案製作';
-function buildWM() {
-  let host = document.getElementById('wm');
-  if (!host) { host = document.createElement('div'); host.id = 'wm'; host.className = 'wm'; host.setAttribute('aria-hidden','true'); document.body.appendChild(host); }
-  host.className = 'wm'; host.removeAttribute('style');
-  const n = Math.ceil((window.innerWidth * window.innerHeight) / 12000) + 40;
-  let s = '';
-  for (let i = 0; i < n; i++) s += '<span>' + WM_TEXT + '<\\/span>';
-  host.innerHTML = '<div class="wm-i" id="wmi">' + s + '<\\/div>';
-}
-function ensureWM() {
-  const host = document.getElementById('wm'), inner = document.getElementById('wmi');
-  if (!host || !inner || inner.textContent.indexOf('CyberHandyman') < 0) { buildWM(); return; }
-  const ch = getComputedStyle(host), ci = getComputedStyle(inner);
-  if (ch.display === 'none' || ch.visibility === 'hidden' || ch.position !== 'fixed' || parseFloat(ci.opacity) < 0.03) {
-    host.removeAttribute('style'); inner.removeAttribute('style'); buildWM();
-  }
-}
-buildWM();
-try { new MutationObserver(ensureWM).observe(document.body, { childList: true }); } catch(e) {}
-setInterval(ensureWM, 1500);
-window.addEventListener('resize', buildWM);
 
 applyI18n();
 queryActive();
