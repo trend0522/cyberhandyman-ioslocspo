@@ -1,15 +1,15 @@
 export function getPageHtml() {
   return `<!DOCTYPE html>
-<html lang="zh-Hant-TW">
+<html lang="zh-TW">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>iOS Location Spoofer</title>
+<title>iOS 虛擬定位</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="iOSLoc">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#0f172a">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icon-180.png">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -17,121 +17,151 @@ export function getPageHtml() {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script>
 <style>
 :root {
-  --bg:#f4f6fa; --card:#ffffff; --card2:#f0f3f8; --line:#e4e8ef; --inset:#f7f9fc;
-  --brand:#2b7de9; --brand2:#1c62c4; --green:#10b981; --red:#ef4444; --orange:#f59e0b;
-  --txt:#1e293b; --muted:#64748b; --mono:#0b8ce0;
-  --blue:#2b7de9; --gray:#64748b; --cyan:#2b7de9; --cyan2:#1c62c4;
+  --bg:#0f172a; --card:#1e293b; --card2:#243044; --line:#334155; --inset:#1a2332;
+  --blue:#3b82f6; --blue2:#2563eb; --green:#22c55e; --red:#ef4444; --orange:#f59e0b;
+  --txt:#f1f5f9; --muted:#94a3b8; --mono:#7dd3fc;
+  --radius:10px;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
-  font-family:-apple-system,system-ui,"SF Pro","PingFang TC","Helvetica Neue","Microsoft JhengHei",sans-serif;
+  font-family:-apple-system,system-ui,"PingFang TC","SF Pro","Helvetica Neue",sans-serif;
   color:var(--txt);
   background:var(--bg);
-  -webkit-font-smoothing:antialiased;
 }
-::placeholder { color:#a3adbb; }
+::placeholder { color:#64748b; }
 ::-webkit-scrollbar { width:6px; height:6px; }
-::-webkit-scrollbar-thumb { background:#cfd6e0; border-radius:3px; }
+::-webkit-scrollbar-thumb { background:#334155; border-radius:3px; }
 
-.map-wrap { position:relative; padding-top: env(safe-area-inset-top); }
-#map { height:50vh; width:100%; min-height:250px; background:#e9edf3; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:center; }
-.leaflet-container { background:#e9edf3; }
-.leaflet-control-zoom a { background:#fff!important; color:var(--txt)!important; border-color:var(--line)!important; }
+/* ---- top bar: wloc8.com 簡潔風格 ---- */
+.topbar { position:sticky; top:0; z-index:1200; display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--card); border-bottom:1px solid var(--line); font-size:13px; color:var(--muted); }
+.topbar .back { flex:none; color:var(--blue); font-weight:600; text-decoration:none; }
+.topbar .topcredit { flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.topbar .topcredit a { color:var(--blue); text-decoration:none; font-weight:600; }
+.topbar .topcredit .ytname { font-size:14px; font-weight:700; color:var(--txt); }
+.topbar .topcredit .forkline { font-size:11px; color:var(--muted); }
+.topbar .topcredit .forkline .v11 { color:var(--green); font-weight:600; }
+.topbar .tg { flex:none; color:#60a5fa; font-weight:600; text-decoration:none; padding:4px 12px; border:1px solid var(--line); border-radius:6px; font-size:12px; }
+.topbar .tg:active { background:var(--card2); }
+
+/* ---- video tutorial CTA ---- */
+.vidbtn { display:flex; align-items:center; justify-content:center; gap:8px; margin:16px 16px 0; padding:14px; border-radius:var(--radius); background:var(--card); color:var(--blue); border:1px solid var(--line); font-size:15px; font-weight:600; text-decoration:none; transition:background .15s; }
+.vidbtn:active { background:var(--card2); }
+
+/* ---- map ---- */
+#map { height:50vh; width:100%; min-height:250px; background:var(--bg); border-bottom:1px solid var(--line); }
+.leaflet-container { background:var(--bg); }
+.leaflet-control-zoom a { background:var(--card)!important; color:var(--txt)!important; border-color:var(--line)!important; }
 .leaflet-control-zoom a:hover { background:var(--card2)!important; }
-.leaflet-bar { border:1px solid var(--line)!important; box-shadow:0 4px 14px rgba(15,25,45,.10)!important; }
-.leaflet-control-attribution { background:rgba(255,255,255,.85)!important; color:#8792a3!important; }
-.leaflet-control-attribution a { color:var(--muted)!important; }
+.leaflet-bar { border:1px solid var(--line)!important; box-shadow:none!important; }
+.leaflet-control-attribution { background:rgba(15,23,42,.8)!important; color:#64748b!important; }
+.leaflet-control-attribution a { color:#94a3b8!important; }
 
 .panel { padding:16px; max-width:600px; margin:0 auto; padding-bottom:calc(16px + env(safe-area-inset-bottom)); }
-.card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:12px; box-shadow:0 2px 10px rgba(15,25,45,.04); }
-.card h3 { font-size:15px; font-weight:700; margin-bottom:12px; color:var(--txt); display:flex; align-items:center; gap:8px; }
-.card h3::before { content:""; width:3px; height:15px; border-radius:2px; background:linear-gradient(180deg,var(--brand),#5ba0f0); flex:none; }
 
-.coords { font-family:"SF Mono",ui-monospace,monospace; font-size:13.5px; color:var(--muted); padding:12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; word-break:break-all; line-height:1.6; margin-bottom:10px; }
-.crow { display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; margin-bottom:6px; }
-.crow .ck { font-size:11px; font-weight:700; letter-spacing:.4px; color:var(--brand); width:42px; flex:none; }
+/* ---- cards: 扁平實色 ---- */
+.card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin-bottom:12px; }
+.card h3 { font-size:15px; font-weight:600; margin-bottom:12px; color:var(--txt); display:flex; align-items:center; gap:8px; }
+.card h3::before { content:""; width:3px; height:14px; border-radius:2px; background:var(--blue); flex:none; }
+
+.coords { font-family:"SF Mono",ui-monospace,monospace; font-size:13px; color:var(--muted); padding:10px 12px; background:var(--inset); border:1px solid var(--line); border-radius:8px; word-break:break-all; }
+.crow { display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--inset); border:1px solid var(--line); border-radius:8px; margin-bottom:6px; }
+.crow .ck { font-size:11px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; color:var(--blue); width:40px; flex:none; }
 .crow .cv { flex:1; min-width:0; font-family:"SF Mono",ui-monospace,monospace; font-size:14px; color:var(--mono); word-break:break-all; }
 .copybtn { flex:none; }
 
+/* ---- buttons ---- */
 .row { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
-.btn { flex:1; min-width:100px; padding:12px 16px; border:none; border-radius:11px; font-size:14px; font-weight:700; cursor:pointer; transition:all .15s; font-family:inherit; }
-.btn-primary { background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#fff; box-shadow:0 6px 16px rgba(43,125,233,.25); }
-.btn-primary:active { filter:brightness(1.08); transform:scale(.97); }
-.btn-secondary { background:#fff; color:#425068; border:1px solid var(--line); font-weight:600; }
-.btn-secondary:active { background:var(--card2); transform:scale(.97); }
-.btn-danger { background:#fff; color:#d62f37; border:1px solid #f7c9cc; }
-.btn-danger:active { background:#fff2f3; transform:scale(.97); }
-.btn.success { background:linear-gradient(135deg,#2fbf71,#158a4d); color:#fff; border:none; box-shadow:0 6px 16px rgba(16,185,129,.28); }
-.btn-sm { flex:none; min-width:auto; padding:6px 12px; font-size:12px; border-radius:8px; }
+.btn { flex:1; min-width:100px; padding:11px 16px; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; transition:background .15s; }
+.btn-primary { background:var(--blue); color:#fff; }
+.btn-primary:active { background:var(--blue2); }
+.btn-secondary { background:var(--card2); color:#cbd5e1; border:1px solid var(--line); font-weight:500; }
+.btn-secondary:active { background:#2a3a50; }
+.btn-danger { background:transparent; color:#f87171; border:1px solid rgba(239,68,68,.4); }
+.btn-danger:active { background:rgba(239,68,68,.1); }
+.btn.success { background:var(--green); color:#052e16; border:none; }
+.btn-sm { flex:none; min-width:auto; padding:6px 12px; font-size:12px; border-radius:6px; }
 
+/* ---- inputs ---- */
 .input-row { display:flex; gap:8px; margin-top:10px; }
-.input-row input { flex:1; padding:11px 12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; font-size:14px; color:var(--txt); outline:none; min-width:0; -webkit-appearance:none; font-family:inherit; transition:border-color .15s,box-shadow .15s; }
-.cvi { flex:1; min-width:0; width:100%; font-family:"SF Mono",ui-monospace,monospace; font-size:14px; color:var(--mono); padding:7px 10px; background:var(--inset); border:1px solid var(--line); border-radius:8px; outline:none; -webkit-appearance:none; transition:border-color .15s,box-shadow .15s; }
-.accfield input { width:100%; padding:9px 10px; background:var(--inset); border:1px solid var(--line); border-radius:8px; font-size:14px; color:var(--txt); outline:none; -webkit-appearance:none; font-family:inherit; transition:border-color .15s,box-shadow .15s; }
-.input-row input:focus, .cvi:focus, .accfield input:focus, .modal input:focus { border-color:var(--brand); box-shadow:0 0 0 3px rgba(43,125,233,.13); }
+.input-row input { flex:1; padding:10px 12px; background:var(--inset); border:1px solid var(--line); border-radius:8px; font-size:14px; color:var(--txt); outline:none; min-width:0; -webkit-appearance:none; transition:border-color .15s; }
+.cvi { flex:1; min-width:0; width:100%; font-family:"SF Mono",ui-monospace,monospace; font-size:14px; color:var(--mono); padding:6px 10px; background:var(--inset); border:1px solid var(--line); border-radius:6px; outline:none; -webkit-appearance:none; transition:border-color .15s; }
+.accfield input { width:100%; padding:8px 10px; background:var(--inset); border:1px solid var(--line); border-radius:6px; font-size:14px; color:var(--txt); outline:none; -webkit-appearance:none; transition:border-color .15s; }
+.input-row input:focus, .cvi:focus, .accfield input:focus, .modal input:focus { border-color:var(--blue); }
 .acc-row { display:flex; gap:8px; margin-bottom:6px; }
 .accfield { flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; }
 .acclbl { font-size:11px; color:var(--muted); }
 
-.status { font-size:12px; color:var(--muted); margin-top:8px; text-align:center; line-height:1.6; }
-.hint { font-size:11px; color:#8792a3; margin-top:8px; line-height:1.7; }
-.accnote { margin-top:10px; padding:12px 14px; background:#f5f9ff; border:1px solid #dbe8fb; border-left:3px solid var(--brand); border-radius:9px; font-size:11.5px; color:#4a5568; line-height:1.9; }
-.accnote b { display:block; color:var(--brand); font-weight:800; font-size:12px; margin-bottom:6px; letter-spacing:.3px; }
-.accnote code { font-family:"SF Mono",ui-monospace,monospace; color:var(--mono); font-size:11px; background:#e6f1fe; padding:1px 5px; border-radius:4px; }
-.accnote em { color:var(--txt); font-style:normal; font-weight:800; }
-.accnote .src { display:block; margin-top:8px; color:#9aa5b5; font-size:10.5px; }
+.status { font-size:12px; color:var(--muted); margin-top:8px; text-align:center; }
+.hint { font-size:11px; color:#64748b; margin-top:8px; line-height:1.6; }
+.accnote { margin-top:10px; padding:11px 13px; background:var(--inset); border:1px solid var(--line); border-left:3px solid var(--blue); border-radius:8px; font-size:11.5px; color:#94a3b8; line-height:1.8; }
+.accnote b { display:block; color:var(--blue); font-weight:700; font-size:12px; margin-bottom:6px; }
+.accnote code { font-family:"SF Mono",ui-monospace,monospace; color:var(--mono); font-size:11px; }
+.accnote em { color:var(--txt); font-style:normal; font-weight:700; }
+.accnote .src { display:block; margin-top:7px; color:#475569; font-size:10.5px; }
 
+/* ---- lists ---- */
 .search-results { margin-top:8px; max-height:260px; overflow-y:auto; }
-.search-item { padding:11px 12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; margin-bottom:6px; cursor:pointer; transition:all .15s; }
-.search-item:active { background:#e9f2fe; border-color:var(--brand); }
+.search-item { padding:10px 12px; background:var(--inset); border:1px solid var(--line); border-radius:8px; margin-bottom:6px; cursor:pointer; transition:background .15s; }
+.search-item:active { background:var(--card2); }
 .search-item .si-name { font-size:14px; color:var(--txt); font-weight:600; }
 .search-item .si-sub { font-size:11px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
-.error-banner { background:#fff5f5; border:1px solid #f7c9cc; border-left:4px solid var(--red); color:#7a3b3e; padding:14px 16px; border-radius:12px; margin-bottom:12px; font-size:13.5px; line-height:1.7; display:none; }
-.error-banner b { display:block; margin-bottom:4px; color:#d62f37; font-size:14.5px; }
+.error-banner { background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3); border-left:4px solid var(--red); color:#fca5a5; padding:14px 16px; border-radius:8px; margin-bottom:12px; font-size:13px; line-height:1.6; display:none; }
+.error-banner b { display:block; margin-bottom:4px; color:#f87171; font-size:14px; }
 
-.toast { position:fixed; top:60px; left:50%; transform:translateX(-50%); background:rgba(30,41,59,.94); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); color:#fff; padding:11px 20px; border-radius:22px; font-size:14px; opacity:0; transition:opacity .3s; pointer-events:none; z-index:9999; max-width:90vw; text-align:center; box-shadow:0 8px 26px rgba(15,25,45,.28); }
+/* --- watermark: 簡潔低調 --- */
+.wm { position:fixed; inset:0; z-index:9998; pointer-events:none; overflow:hidden; user-select:none; -webkit-user-select:none; }
+.wm-i { position:absolute; inset:-60%; display:flex; flex-wrap:wrap; align-content:flex-start; transform:rotate(-24deg); opacity:.06; }
+.wm-i span { flex:none; padding:26px 30px; font-size:16px; font-weight:600; white-space:nowrap; color:#94a3b8; letter-spacing:.3px; }
+
+.toast { position:fixed; top:60px; left:50%; transform:translateX(-50%); background:var(--card2); border:1px solid var(--line); color:var(--txt); padding:11px 20px; border-radius:22px; font-size:14px; opacity:0; transition:opacity .3s; pointer-events:none; z-index:9999; max-width:90vw; text-align:center; }
 .toast.show { opacity:1; }
 
-.active-loc { background:var(--inset); border:1px solid var(--line); border-radius:10px; padding:12px; font-size:13px; color:var(--txt); }
+.active-loc { background:var(--inset); border:1px solid var(--line); border-radius:8px; padding:11px 12px; font-size:13px; color:var(--txt); }
 .active-loc .label { font-size:11px; color:var(--muted); margin-bottom:5px; }
-.active-loc .value { font-family:"SF Mono",ui-monospace,monospace; font-size:13px; color:var(--mono); word-break:break-all; }
+.active-loc .value { font-family:"SF Mono",ui-monospace,monospace; font-size:13px; color:var(--mono); }
 
 .fav-list { max-height:240px; overflow-y:auto; }
-.fav-item { display:flex; align-items:center; gap:8px; padding:11px 12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; margin-bottom:6px; cursor:pointer; transition:all .15s; }
-.fav-item:active { background:#e9f2fe; border-color:var(--brand); }
+.fav-item { display:flex; align-items:center; gap:8px; padding:10px 12px; background:var(--inset); border:1px solid var(--line); border-radius:8px; margin-bottom:6px; cursor:pointer; transition:background .15s; }
+.fav-item:active { background:var(--card2); }
 .fav-item .fav-info { flex:1; min-width:0; }
 .fav-item .fav-name { font-size:14px; font-weight:600; color:var(--txt); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .fav-item .fav-coords { font-size:11px; color:var(--muted); font-family:"SF Mono",ui-monospace,monospace; margin-top:2px; }
-.fav-item .fav-active { font-size:10px; color:var(--green); font-weight:700; margin-top:2px; }
-.fav-item .fav-del { flex:none; width:28px; height:28px; border:none; border-radius:50%; background:transparent; color:var(--red); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s; }
-.fav-item .fav-del:hover { background:#ffe9ea; }
+.fav-item .fav-active { font-size:10px; color:var(--green); font-weight:600; margin-top:2px; }
+.fav-item .fav-del { flex:none; width:28px; height:28px; border:none; border-radius:50%; background:transparent; color:#f87171; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s; }
+.fav-item .fav-del:hover { background:rgba(239,68,68,.1); }
 .fav-empty { text-align:center; color:var(--muted); font-size:13px; padding:16px 0; }
 .fav-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
 .fav-header h3 { margin-bottom:0; }
 
-.modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(15,25,45,.42); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); z-index:10000; display:none; align-items:center; justify-content:center; padding:20px; }
+/* ---- modal ---- */
+.modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(15,23,42,.75); z-index:10000; display:none; align-items:center; justify-content:center; padding:20px; }
 .modal-overlay.show { display:flex; }
-.modal { background:#fff; border:1px solid var(--line); border-radius:18px; padding:22px; width:100%; max-width:340px; box-shadow:0 20px 60px rgba(15,25,45,.22); }
-.modal h3 { font-size:17px; font-weight:700; margin-bottom:16px; text-align:center; color:var(--txt); }
-.modal input { width:100%; padding:12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; font-size:15px; color:var(--txt); outline:none; margin-bottom:12px; -webkit-appearance:none; font-family:inherit; transition:border-color .15s,box-shadow .15s; }
+.modal { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px; width:100%; max-width:340px; }
+.modal h3 { font-size:17px; font-weight:600; margin-bottom:16px; text-align:center; color:var(--txt); }
+.modal input { width:100%; padding:12px; background:var(--inset); border:1px solid var(--line); border-radius:8px; font-size:15px; color:var(--txt); outline:none; margin-bottom:12px; -webkit-appearance:none; transition:border-color .15s; }
 .modal .modal-btns { display:flex; gap:8px; }
 .modal .modal-btns .btn { padding:12px; }
 
-.layer-switch { position:absolute; top:calc(10px + env(safe-area-inset-top)); right:10px; z-index:1000; display:flex; gap:4px; background:rgba(255,255,255,.92); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:10px; padding:4px; box-shadow:0 4px 14px rgba(15,25,45,.12); }
-.layer-btn { border:none; background:transparent; padding:6px 10px; border-radius:7px; font-size:12px; font-weight:600; color:#5b6779; cursor:pointer; transition:all .15s; white-space:nowrap; font-family:inherit; }
-.layer-btn.active { background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#fff; font-weight:700; }
-.layer-btn:active { transform:scale(.95); }
-.lang-switch { position:absolute; top:calc(10px + env(safe-area-inset-top)); left:10px; z-index:1000; display:flex; gap:2px; background:rgba(255,255,255,.92); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:10px; padding:4px; box-shadow:0 4px 14px rgba(15,25,45,.12); }
-.lang-btn { border:none; background:transparent; padding:6px 11px; border-radius:7px; font-size:12px; font-weight:700; color:#5b6779; cursor:pointer; transition:all .15s; font-family:inherit; }
-.lang-btn.active { background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#fff; }
-.lang-btn:active { transform:scale(.95); }
+/* ---- map overlay switches: 簡潔膠囊 ---- */
+.layer-switch { position:absolute; top:10px; right:10px; z-index:1000; display:flex; gap:4px; background:rgba(15,23,42,.85); border:1px solid var(--line); border-radius:8px; padding:4px; }
+.layer-btn { border:none; background:transparent; padding:6px 10px; border-radius:6px; font-size:12px; font-weight:500; color:#94a3b8; cursor:pointer; transition:all .15s; white-space:nowrap; }
+.layer-btn.active { background:var(--blue); color:#fff; font-weight:600; }
+.lang-switch { position:absolute; top:10px; left:10px; z-index:1000; display:flex; gap:2px; background:rgba(15,23,42,.85); border:1px solid var(--line); border-radius:8px; padding:4px; }
+.lang-btn { border:none; background:transparent; padding:6px 11px; border-radius:6px; font-size:12px; font-weight:600; color:#94a3b8; cursor:pointer; transition:all .15s; }
+.lang-btn.active { background:var(--blue); color:#fff; }
 
 @media(max-width:480px) { #map { height:44vh; } .panel { padding:12px; } .layer-btn { padding:5px 7px; font-size:11px; } }
 </style>
 </head>
 <body>
-<div class="map-wrap">
+<div class="topbar">
+  <a class="back" href="/">← 主頁</a>
+  <span class="topcredit">📺 <a class="ytname" href="https://www.youtube.com/@CyberHandyman/videos" target="_blank" rel="noopener">YouTube CyberHandyman 賽博工具人</a><span class="forkline"> · fork from 鳴謝貢獻者: Yu9191 / mekos2772 / acheong08 <span class="v11">· 已同步 Yu9191 v1.1</span></span></span>
+  <a class="tg" href="https://t.me/cyberhandymancngroup" target="_blank" rel="noopener">✈️ TG群</a>
+</div>
+<a class="vidbtn" href="https://youtu.be/EspuRlKWUxc" target="_blank" rel="noopener" data-i18n="video_btn">▶️ 影片教學（YouTube）</a>
+<div style="position:relative">
 <div id="map"></div>
 <div class="lang-switch">
   <button class="lang-btn" data-lang="zh" onclick="setLang('zh')">繁</button>
@@ -151,9 +181,9 @@ body {
   <div class="card">
     <h3 data-i18n="choose_title">選擇目標位置</h3>
     <div class="coords" id="coords" data-i18n="coords_hint">點擊地圖或使用下方工具選擇位置</div>
-    <div id="coordGrid">
-      <div class="crow"><span class="ck" data-i18n="lat">緯度</span><input class="cvi" id="cvLat" type="number" step="0.000001" placeholder="latitude" /><button class="btn btn-sm btn-secondary copybtn" data-i18n="copy" onclick="copyField('lat',this)">複製</button></div>
-      <div class="crow"><span class="ck" data-i18n="lon">經度</span><input class="cvi" id="cvLon" type="number" step="0.000001" placeholder="longitude" /><button class="btn btn-sm btn-secondary copybtn" data-i18n="copy" onclick="copyField('lon',this)">複製</button></div>
+    <div id="coordGrid" style="display:none">
+      <div class="crow"><span class="ck" data-i18n="lat">緯度</span><span class="cv" id="cvLat"></span><button class="btn btn-sm btn-secondary copybtn" data-i18n="copy" onclick="copyField('lat',this)">複製</button></div>
+      <div class="crow"><span class="ck" data-i18n="lon">經度</span><span class="cv" id="cvLon"></span><button class="btn btn-sm btn-secondary copybtn" data-i18n="copy" onclick="copyField('lon',this)">複製</button></div>
       <div class="crow"><span class="ck" data-i18n="alt">海拔</span><input class="cvi" id="altInput" type="number" inputmode="decimal" step="1" /><button class="btn btn-sm btn-secondary copybtn" data-i18n="copy" onclick="copyField('alt',this)">複製</button></div>
       <div class="acc-row">
         <div class="accfield"><span class="acclbl" data-i18n="hacc">水平精確度</span><input id="haccInput" type="number" inputmode="numeric" step="1" min="1" value="39" /></div>
@@ -163,7 +193,7 @@ body {
     </div>
     <div class="row">
       <button class="btn btn-primary" id="saveBtn" data-i18n="save" onclick="save()">儲存到裝置</button>
-      <button class="btn btn-secondary" data-i18n="restore" onclick="restoreReal()">還原真實定位</button>
+      <button class="btn btn-secondary" data-i18n="restore" onclick="restoreReal()">恢復真實定位</button>
     </div>
     <div class="row">
       <button class="btn btn-secondary" data-i18n="copy_params" onclick="copyParams(this)">複製模組參數</button>
@@ -175,7 +205,7 @@ body {
   </div>
   <div class="card">
     <div class="fav-header">
-      <h3 data-i18n="fav_title">收藏的地點</h3>
+      <h3 data-i18n="fav_title">收藏的位置</h3>
       <button class="btn btn-sm btn-secondary" data-i18n="clear_all" onclick="clearAllFav()" id="clearAllBtn" style="display:none">清空全部</button>
     </div>
     <div id="favList" class="fav-list"></div>
@@ -183,7 +213,7 @@ body {
   <div class="card">
     <h3 data-i18n="active_title">目前生效座標</h3>
     <div class="active-loc" id="activeLoc">
-      <div class="label" data-i18n="active_label">裝置本機座標（latitude／longitude／altitude）</div>
+      <div class="label" data-i18n="active_label">裝置本地座標 (latitude/longitude/altitude)</div>
       <div class="value" id="activeValue">查詢中...</div>
     </div>
     <div class="row">
@@ -194,27 +224,28 @@ body {
   <div class="card">
     <h3 data-i18n="paste_title">貼上地圖連結</h3>
     <div class="input-row">
-      <input id="urlInput" data-i18n-ph="paste_ph" placeholder="Apple／Google／高德／百度地圖連結或經緯度" />
+      <input id="urlInput" data-i18n-ph="paste_ph" placeholder="Apple/Google/高德/百度地圖連結 或 經緯度" />
       <button class="btn btn-secondary" style="flex:none;min-width:56px" data-i18n="parse" onclick="parseUrl()">解析</button>
     </div>
-    <div style="font-size:11px;color:var(--gray);margin-top:6px" data-i18n="paste_hint">支援 Apple Maps · Google Maps · 高德 · 百度 · 座標文字（自動轉換為 WGS-84）</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:6px" data-i18n="paste_hint">支援 Apple Maps · Google Maps · 高德 · 百度 · 座標文字（自動換算為 WGS-84）</div>
   </div>
   <div class="card">
     <h3 data-i18n="search_title">搜尋地點</h3>
     <div class="input-row">
-      <input id="searchInput" data-i18n-ph="search_ph" placeholder="搜尋地名，按 Enter 列出候選（僅預覽，不修改定位）" />
+      <input id="searchInput" data-i18n-ph="search_ph" placeholder="搜地名，按 Enter 列出候選（僅預覽，不改定位）" />
       <button class="btn btn-secondary" style="flex:none;min-width:56px" data-i18n="search" onclick="searchPlace()">搜尋</button>
     </div>
     <div id="searchResults" class="search-results"></div>
   </div>
   <div class="status" id="status">選好位置後點擊「儲存到裝置」寫入代理工具</div>
 </div>
+<div class="wm" id="wm" aria-hidden="true"><div class="wm-i" id="wmi"></div></div>
 <div class="toast" id="toast"></div>
 <div class="modal-overlay" id="favModal">
   <div class="modal">
-    <h3 data-i18n="modal_title">收藏此地點</h3>
-    <input id="favNameInput" data-i18n-ph="modal_ph" placeholder="輸入備註名稱（例如：公司、家）" maxlength="30" />
-    <div style="font-size:12px;color:var(--gray);margin-bottom:12px;text-align:center" id="favModalCoords"></div>
+    <h3 data-i18n="modal_title">收藏此位置</h3>
+    <input id="favNameInput" data-i18n-ph="modal_ph" placeholder="輸入備註名稱（如: 公司、家）" maxlength="30" />
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;text-align:center" id="favModalCoords"></div>
     <div class="modal-btns">
       <button class="btn btn-secondary" data-i18n="cancel" onclick="closeFavModal()">取消</button>
       <button class="btn btn-primary" data-i18n="save_short" onclick="confirmFav()">儲存</button>
@@ -236,13 +267,10 @@ const elevCache = new Map();
 let activeLon = null, activeLat = null, activeAcc = null, activeAlt = null, activeStatus = 'querying';
 let savedLon = null, savedLat = null, savedTimeStr = '';
 
-if (typeof L === 'undefined') {
-  document.getElementById('map').innerHTML = '<div style="text-align:center; color:#d62f37; font-size:14px; padding:20px; font-weight:700;">⚠️ 地圖元件載入失敗<br><span style="font-size:12px;color:#64748b;font-weight:normal;">請檢查網路，或將 unpkg.com 加入代理規則。您仍可在下方手動輸入座標。</span></div>';
-}
-
+/* ---- i18n（繁體中文） ---- */
 const I18N = {
   zh: {
-    title: 'iOS Location Spoofer',
+    title: 'iOS 虛擬定位',
     layer_satellite: '衛星', layer_amap: '高德', layer_color: '彩色', layer_standard: '標準', layer_dark: '暗色',
     err_html: '<b>模組未生效</b>請檢查以下設定：<br>1. 已安裝並啟用 iOS Location Spoofer 模組<br>2. MITM 已開啟且信任憑證<br>3. MITM 主機名稱包含 gs-loc.apple.com<br>4. 目前網路已走代理',
     choose_title: '選擇目標位置',
@@ -255,40 +283,41 @@ const I18N = {
     acc_note_html: '<b>精確度參數怎麼填</b>' +
       '<code>horizontalAccuracy</code> 水平精確度（公尺），預設 <em>39</em>，越小越「精準」—— 想更像 GPS 可設 <em>5~15</em>；保持 <em>39</em> 也正常。<br>' +
       '<code>verticalAccuracy</code> 垂直精確度（公尺），預設 <em>1000</em> —— 本頁已自動填入目標點真實海拔，可調小到 <em>10~30</em>，讓海拔顯得更有說服力。<br>' +
-      '<code>擾動半徑</code>（公尺），預設 <em>0</em>（關閉）—— 設為 <em>N</em> 後，每次定位會在目標點周圍 <em>N</em> 公尺內隨機偏移，避免每次結果一模一樣。想固定在精確座標就留 <em>0</em>。' +
+      '<code>擾動半徑</code>（公尺），預設 <em>0</em>（關閉）—— 設為 <em>N</em> 後，每次定位在目標點周圍 <em>N</em> 公尺內隨機偏移，避免每次結果一模一樣。想固定在精確座標就留 <em>0</em>。' +
       '<span class="src">參數建議來自上游專案 mekos2772 / ios-location-spoofer</span>',
-    fav_title: '收藏的地點', clear_all: '清空全部',
-    active_title: '目前生效座標', active_label: '裝置本機座標（latitude／longitude／altitude）',
+    fav_title: '收藏的位置', clear_all: '清空全部',
+    active_title: '目前生效座標', active_label: '裝置本地座標 (latitude/longitude/altitude)',
     refresh: '重新整理', clear_data: '清除資料',
-    paste_title: '貼上地圖連結', paste_ph: 'Apple／Google／高德／百度地圖連結 或 經緯度', parse: '解析',
-    paste_hint: '支援 Apple Maps · Google Maps · 高德 · 百度 · 座標文字（自動轉換為 WGS-84）',
-    search_title: '搜尋地點', search_ph: '搜尋地名，按 Enter 列出候選（僅預覽，不修改定位）', search: '搜尋',
+    paste_title: '貼上地圖連結', paste_ph: 'Apple/Google/高德/百度地圖連結 或 經緯度', parse: '解析',
+    paste_hint: '支援 Apple Maps · Google Maps · 高德 · 百度 · 座標文字（自動換算為 WGS-84）',
+    search_title: '搜尋地點', search_ph: '搜地名，按 Enter 列出候選（僅預覽，不改定位）', search: '搜尋',
     status_hint: '選好位置後點擊「儲存到裝置」寫入代理工具',
-    modal_title: '收藏此地點', modal_ph: '輸入備註名稱（例如：公司、家）', cancel: '取消', save_short: '儲存',
-    acc: '精確度', restore: '還原真實定位', restored: '✓ 虛擬定位已清除，定位服務開關關閉後，關掉代理開關，等待至少 10 秒鐘，再次開啟才會生效', hacc: '水平精確度', vacc: '垂直精確度', jitter: '擾動半徑（公尺）',
-    querying: '查詢中...', no_saved: '沒有已儲存的座標', query_failed: '查詢失敗（需要代理模組支援）', cleared: '已清除',
-    fav_empty: '尚無收藏，選好位置後點擊「收藏位置」',
+    modal_title: '收藏此位置', modal_ph: '輸入備註名稱（如: 公司、家）', cancel: '取消', save_short: '儲存',
+    acc: '精確度', restore: '恢復真實定位', restored: '✓ 虛擬定位已清除，定位服務開關關閉後，關掉代理開關，等待至少 10 秒鐘，再次開啟生效', hacc: '水平精確度', vacc: '垂直精確度', jitter: '擾動半徑(公尺)',
+    querying: '查詢中...', no_saved: '無已儲存的座標', query_failed: '查詢失敗 (需要代理模組支援)', cleared: '已清除',
+    fav_empty: '暫無收藏，選好位置後點擊「收藏位置」',
     active_now: '✓ 目前生效', del: '刪除',
     pick_first: '請先在地圖上選擇一個位置',
     enter_label: '請輸入備註名稱',
-    added: function(n){ return '已收藏：' + n; },
-    deleted: function(n){ return '已刪除：' + n; },
-    clear_fav_confirm: '確定要清空所有收藏嗎？', all_cleared: '已清空所有收藏',
-    clear_confirm: '確定要清除裝置上已儲存的座標嗎？清除後將使用模組預設參數或停止修改定位。',
+    added: function(n){ return '已收藏: ' + n; },
+    deleted: function(n){ return '已刪除: ' + n; },
+    clear_fav_confirm: '確定清空所有收藏？', all_cleared: '已清空所有收藏',
+    clear_confirm: '確定清除裝置上已儲存的座標？清除後將使用模組預設參數或停止修改定位。',
     dev_cleared: '已清除裝置座標',
-    clear_failed: function(e){ return '清除失敗：' + e; },
+    clear_failed: function(e){ return '清除失敗: ' + e; },
     clear_failed_cfg: '清除失敗 - 請檢查模組設定',
     saving: '儲存中...', saved: '✓ 已儲存',
-    written: function(lo, la, ts){ return '✓ 已寫入：' + lo.toFixed(6) + ', ' + la.toFixed(6) + ' · ' + ts; },
-    saved_toast: '✓ 座標已成功寫入模組，定位服務開關關閉後，等待至少 10 秒鐘，再次開啟才會生效',
+    written: function(lo, la, ts){ return '✓ 已寫入: ' + lo.toFixed(6) + ', ' + la.toFixed(6) + ' · ' + ts; },
+    saved_toast: '✓ 座標已成功寫入模組，定位服務關閉開關，等待至少 10 秒鐘，再次開啟生效',
+    video_btn: '▶️ 影片教學（YouTube）',
     save_failed: '✗ 儲存失敗 - 請檢查模組設定', write_failed: '寫入失敗',
     no_geo: '瀏覽器不支援定位', getting_loc: '取得位置中...', got_loc: '已取得目前位置',
-    loc_failed: function(m){ return '定位失敗：' + m; },
+    loc_failed: function(m){ return '定位失敗: ' + m; },
     paste_first: '請貼上地圖連結或座標', parse_failed: '無法解析座標，請檢查連結格式', parsing: '解析中...',
-    parsed: function(lo, la){ return '已解析：' + lo.toFixed(4) + ', ' + la.toFixed(4); },
+    parsed: function(lo, la){ return '已解析: ' + lo.toFixed(4) + ', ' + la.toFixed(4); },
     enter_place: '請輸入地名', searching: '搜尋中...',
-    not_found: function(q){ return '未找到：' + q; }, search_failed: '搜尋失敗',
-    copied: function(x){ return '已複製：' + x; }, copy_failed: '複製失敗，請手動選取',
+    not_found: function(q){ return '未找到: ' + q; }, search_failed: '搜尋失敗',
+    copied: function(x){ return '已複製: ' + x; }, copy_failed: '複製失敗，請手動選取',
     alt_unknown_copy: '海拔尚未取得，僅複製經緯度'
   },
   en: {
@@ -331,6 +360,7 @@ const I18N = {
     saving: 'Saving...', saved: '✓ Saved',
     written: function(lo, la, ts){ return '✓ Written: ' + lo.toFixed(6) + ', ' + la.toFixed(6) + ' · ' + ts; },
     saved_toast: '✓ Coordinates written to the module. Turn Location Services OFF, wait at least 10 seconds, then turn it back ON to take effect.',
+    video_btn: '▶️ Video tutorial (YouTube)',
     save_failed: '✗ Save failed - please check the module configuration', write_failed: 'Write failed',
     no_geo: 'Browser does not support geolocation', getting_loc: 'Getting location...', got_loc: 'Current location acquired',
     loc_failed: function(m){ return 'Location failed: ' + m; },
@@ -359,7 +389,7 @@ function t(key) {
 }
 
 function applyI18n() {
-  document.documentElement.lang = (lang === 'zh' ? 'zh-Hant-TW' : 'en');
+  document.documentElement.lang = (lang === 'zh' ? 'zh-TW' : 'en');
   document.title = t('title');
   document.querySelectorAll('[data-i18n]').forEach(function(el){ el.textContent = t(el.getAttribute('data-i18n')); });
   document.querySelectorAll('[data-i18n-ph]').forEach(function(el){ el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
@@ -377,34 +407,29 @@ function setLang(l) {
   applyI18n();
 }
 
-let map = null;
-if (typeof L !== 'undefined') {
-  map = L.map('map').setView([20, 0], 2);
-  const tiles = {
-    satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, attribution:'ArcGIS'}),
-    wgs84: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, attribution:'ArcGIS WGS84'}),
-    standard: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OSM'}),
-    dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {maxZoom:19, attribution:'© Carto'}),
-    amap: L.tileLayer('https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}', {maxZoom:18, subdomains:'1234', attribution:'© Amap'}),
-    voyager: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom:19, attribution:'© Carto'})
-  };
-  let currentLayer = tiles.satellite;
+const map = L.map('map').setView([20, 0], 2);
+const tiles = {
+  satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, attribution:'ArcGIS'}),
+  wgs84: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, attribution:'ArcGIS WGS84'}),
+  standard: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'\\u00a9 OSM'}),
+  dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {maxZoom:19, attribution:'\\u00a9 Carto'}),
+  amap: L.tileLayer('https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}', {maxZoom:18, subdomains:'1234', attribution:'\\u00a9 Amap'}),
+  voyager: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom:19, attribution:'\\u00a9 Carto'})
+};
+let currentLayer = tiles.satellite;
+currentLayer.addTo(map);
+function switchLayer(name) {
+  map.removeLayer(currentLayer);
+  currentLayer = tiles[name];
   currentLayer.addTo(map);
-  window.switchLayer = function(name) {
-    map.removeLayer(currentLayer);
-    currentLayer = tiles[name];
-    currentLayer.addTo(map);
-    document.querySelectorAll('.layer-btn').forEach(b => b.classList.toggle('active', b.dataset.layer === name));
-  };
-  let marker = L.marker([lat, lon], {draggable:true});
-  let markerShown = false;
-  window.showMarker = function() { if (!markerShown) { marker.addTo(map); markerShown = true; } };
-  marker.on('dragend', e => { const p=e.target.getLatLng(); setPos(p.lat, p.lng); });
-  map.on('click', e => { setPos(e.latlng.lat, e.latlng.lng); });
+  document.querySelectorAll('.layer-btn').forEach(b => b.classList.toggle('active', b.dataset.layer === name));
 }
+let marker = L.marker([lat, lon], {draggable:true});
+let markerShown = false;
+function showMarker() { if (!markerShown) { marker.addTo(map); markerShown = true; } }
 
-document.getElementById('cvLat').addEventListener('input', function(e) { lat = parseFloat(e.target.value) || 0; });
-document.getElementById('cvLon').addEventListener('input', function(e) { lon = parseFloat(e.target.value) || 0; });
+marker.on('dragend', e => { const p=e.target.getLatLng(); setPos(p.lat, p.lng); });
+map.on('click', e => { setPos(e.latlng.lat, e.latlng.lng); });
 
 function currentAlt() {
   const el = document.getElementById('altInput');
@@ -423,15 +448,18 @@ function setAltInput(v) {
 }
 
 function updateCoords() {
+  const grid = document.getElementById('coordGrid');
   const coords = document.getElementById('coords');
   if (!selected) {
+    grid.style.display = 'none';
     coords.style.display = '';
     coords.textContent = t('coords_hint');
-  } else {
-    coords.style.display = 'none';
+    return;
   }
-  document.getElementById('cvLat').value = lat ? lat.toFixed(6) : '';
-  document.getElementById('cvLon').value = lon ? lon.toFixed(6) : '';
+  coords.style.display = 'none';
+  grid.style.display = '';
+  document.getElementById('cvLat').textContent = lat.toFixed(6);
+  document.getElementById('cvLon').textContent = lon.toFixed(6);
 }
 
 function updateStatus() {
@@ -442,8 +470,8 @@ function updateStatus() {
 
 function setPos(newLat, newLon, knownAlt) {
   lat = newLat; lon = newLon; selected = true;
-  if (map) window.showMarker();
-  if (map && marker) marker.setLatLng([lat, lon]);
+  showMarker();
+  marker.setLatLng([lat, lon]);
   if (typeof knownAlt === 'number') { elev = Math.round(knownAlt); elevState = 'ok'; elevCache.set(elevKey(lat, lon), elev); }
   updateCoords();
   fetchElevation(lat, lon);
@@ -451,7 +479,7 @@ function setPos(newLat, newLon, knownAlt) {
 
 function moveTo(newLat, newLon, zoom, knownAlt) {
   setPos(newLat, newLon, knownAlt);
-  if (map) map.setView([lat, lon], zoom || 15);
+  map.setView([lat, lon], zoom || 15);
 }
 
 function elevKey(la, lo) { return la.toFixed(4) + ',' + lo.toFixed(4); }
@@ -503,11 +531,11 @@ function copyText(str) {
 }
 
 function copyField(which, btn) {
+  if (!selected) { toast(t('pick_first')); return; }
   let val;
-  if (which === 'lat') val = lat ? lat.toFixed(6) : '';
-  else if (which === 'lon') val = lon ? lon.toFixed(6) : '';
+  if (which === 'lat') val = lat.toFixed(6);
+  else if (which === 'lon') val = lon.toFixed(6);
   else { const a = currentAlt(); if (a === null) { toast(t('alt_na')); return; } val = String(a); }
-  if (!val) { toast(t('pick_first')); return; }
   copyText(val).then(() => {
     toast(t('copied', val));
     if (btn) { const o = btn.textContent; btn.classList.add('success'); btn.textContent = '✓'; setTimeout(() => { btn.textContent = o; btn.classList.remove('success'); }, 1200); }
@@ -523,7 +551,7 @@ function moduleParamString() {
 }
 
 function copyParams(btn) {
-  if (!lat || !lon) { toast(t('pick_first')); return; }
+  if (!selected) { toast(t('pick_first')); return; }
   const s = moduleParamString();
   copyText(s).then(() => {
     toast(t('copied', s));
@@ -567,7 +595,7 @@ function escHtml(s) {
 }
 
 function addFav() {
-  if (!lat || !lon) { toast(t('pick_first')); return; }
+  if (!selected) { toast(t('pick_first')); return; }
   var _fa = currentAlt();
   document.getElementById('favModalCoords').textContent = lon.toFixed(6) + ', ' + lat.toFixed(6) + (_fa !== null ? ('  ·  ' + _fa + ' m') : '');
   document.getElementById('favNameInput').value = '';
@@ -677,7 +705,7 @@ function clearActive() {
 }
 
 async function save() {
-  if (!lat || !lon) { toast(t('pick_first')); return; }
+  if (!selected) { toast(t('pick_first')); return; }
   const btn = document.getElementById('saveBtn');
   btn.textContent = t('saving'); btn.disabled = true;
   showError(false);
@@ -752,14 +780,14 @@ async function searchPlace() {
   const q = document.getElementById('searchInput').value.trim();
   if (!q) return toast(t('enter_place'));
   const box = document.getElementById('searchResults');
-  box.innerHTML = '<div class="search-item">' + escHtml(t('searching')) + '<\\/div>';
+  box.innerHTML = '<div class="search-item">' + escHtml(t('="searching')) + '<\\/div>';
   try {
-    const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=6&q='+encodeURIComponent(q), { headers: { 'Accept-Language': (lang === 'zh' ? 'zh-TW' : 'en') } });
+select    const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=6&q='+encodeURIComponent(q), { headers: { 'Accept-Language': (lang === 'zh' ? 'zh-TW' : 'en') } });
     searchResults = await r.json();
     if (!searchResults.length) { box.innerHTML = ''; toast(t('not_found', q), 3000); return; }
     box.innerHTML = searchResults.map(function(p, i){
       const name = p.display_name || '';
-      return '<div class="search-item" onclick="selectSearchResult(' + i + ')">' +
+      return '<div class="search-item" onclickSearchResult(' + i + ')">' +
         '<div class="si-name">' + escHtml(name.split(',')[0]) + '<\\/div>' +
         '<div class="si-sub">' + escHtml(name) + '<\\/div>' +
       '<\\/div>';
@@ -796,6 +824,30 @@ document.addEventListener('paste', e => {
 document.getElementById('searchInput').addEventListener('keydown', e => { if(e.key==='Enter') searchPlace(); });
 document.getElementById('urlInput').addEventListener('keydown', e => { if(e.key==='Enter') parseUrl(); });
 document.getElementById('favNameInput').addEventListener('keydown', e => { if(e.key==='Enter') confirmFav(); });
+
+/* ---- Watermark ---- */
+const WM_TEXT = 'YouTube：賽博工具人 @CyberHandyman 根據GitHub開源專案製作';
+function buildWM() {
+  let host = document.getElementById('wm');
+  if (!host) { host = document.createElement('div'); host.id = 'wm'; host.className = 'wm'; host.setAttribute('aria-hidden','true'); document.body.appendChild(host); }
+  host.className = 'wm'; host.removeAttribute('style');
+  const n = Math.ceil((window.innerWidth * window.innerHeight) / 12000) + 40;
+  let s = '';
+  for (let i = 0; i < n; i++) s += '<span>' + WM_TEXT + '<\\/span>';
+  host.innerHTML = '<div class="wm-i" id="wmi">' + s + '<\\/div>';
+}
+function ensureWM() {
+  const host = document.getElementById('wm'), inner = document.getElementById('wmi');
+  if (!host || !inner || inner.textContent.indexOf('CyberHandyman') < 0) { buildWM(); return; }
+  const ch = getComputedStyle(host), ci = getComputedStyle(inner);
+  if (ch.display === 'none' || ch.visibility === 'hidden' || ch.position !== 'fixed' || parseFloat(ci.opacity) < 0.03) {
+    host.removeAttribute('style'); inner.removeAttribute('style'); buildWM();
+  }
+}
+buildWM();
+try { new MutationObserver(ensureWM).observe(document.body, { childList: true }); } catch(e) {}
+setInterval(ensureWM, 1500);
+window.addEventListener('resize', buildWM);
 
 applyI18n();
 queryActive();
