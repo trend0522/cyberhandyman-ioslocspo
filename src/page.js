@@ -13,7 +13,6 @@ export function getPageHtml() {
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icon-180.png">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
-<!-- 換回原本的 unpkg，如果地圖還是空白，請將 unpkg.com 加入代理規則 -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script>
 <style>
@@ -48,7 +47,7 @@ body {
 .card h3 { font-size:15px; font-weight:700; margin-bottom:12px; color:var(--txt); display:flex; align-items:center; gap:8px; }
 .card h3::before { content:""; width:3px; height:15px; border-radius:2px; background:linear-gradient(180deg,var(--brand),#5ba0f0); flex:none; }
 
-.coords { font-family:"SF Mono",ui-monospace,monospace; font-size:13.5px; color:var(--muted); padding:12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; word-break:break-all; line-height:1.6; }
+.coords { font-family:"SF Mono",ui-monospace,monospace; font-size:13.5px; color:var(--muted); padding:12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; word-break:break-all; line-height:1.6; margin-bottom:10px; }
 .crow { display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; margin-bottom:6px; }
 .crow .ck { font-size:11px; font-weight:700; letter-spacing:.4px; color:var(--brand); width:42px; flex:none; }
 .crow .cv { flex:1; min-width:0; font-family:"SF Mono",ui-monospace,monospace; font-size:14px; color:var(--mono); word-break:break-all; }
@@ -156,9 +155,10 @@ body {
   <div class="card">
     <h3 data-i18n="choose_title">選擇目標位置</h3>
     <div class="coords" id="coords" data-i18n="coords_hint">點擊地圖或使用下方工具選擇位置</div>
-    <div id="coordGrid" style="display:none">
-      <div class="crow"><span class="ck" data-i18n="lat">緯度</span><span class="cv" id="cvLat"></span><button class="btn btn-sm btn-secondary copybtn" data-i18n="copy" onclick="copyField('lat',this)">複製</button></div>
-      <div class="crow"><span class="ck" data-i18n="lon">經度</span><span class="cv" id="cvLon"></span><button class="btn btn-sm btn-secondary copybtn" data-i18n="copy" onclick="copyField('lon',this)">複製</button></div>
+    <!-- 修正：移除了 display:none，讓輸入框預設顯示 -->
+    <div id="coordGrid">
+      <div class="crow"><span class="ck" data-i18n="lat">緯度</span><input class="cvi" id="cvLat" type="number" step="0.000001" placeholder="latitude" /><button class="btn btn-sm btn-secondary copybtn" data-i18n="copy" onclick="copyField('lat',this)">複製</button></div>
+      <div class="crow"><span class="ck" data-i18n="lon">經度</span><input class="cvi" id="cvLon" type="number" step="0.000001" placeholder="longitude" /><button class="btn btn-sm btn-secondary copybtn" data-i18n="copy" onclick="copyField('lon',this)">複製</button></div>
       <div class="crow"><span class="ck" data-i18n="alt">海拔</span><input class="cvi" id="altInput" type="number" inputmode="decimal" step="1" /><button class="btn btn-sm btn-secondary copybtn" data-i18n="copy" onclick="copyField('alt',this)">複製</button></div>
       <div class="acc-row">
         <div class="accfield"><span class="acclbl" data-i18n="hacc">水平精確度</span><input id="haccInput" type="number" inputmode="numeric" step="1" min="1" value="39" /></div>
@@ -242,6 +242,11 @@ const elevCache = new Map();
 let activeLon = null, activeLat = null, activeAcc = null, activeAlt = null, activeStatus = 'querying';
 let savedLon = null, savedLat = null, savedTimeStr = '';
 
+// 檢查 Leaflet 是否載入成功，若失敗直接顯示提示，避免整段 JS 崩潰
+if (typeof L === 'undefined') {
+  document.getElementById('map').innerHTML = '<div style="text-align:center; color:#d62f37; font-size:14px; padding:20px; font-weight:700;">⚠️ 地圖元件載入失敗<br><span style="font-size:12px;color:#64748b;font-weight:normal;">請檢查網路，或將 unpkg.com 加入代理規則。您仍可在下方手動輸入座標。</span></div>';
+}
+
 const I18N = {
   zh: {
     title: 'iOS 虛擬定位',
@@ -283,8 +288,8 @@ const I18N = {
     saving: '儲存中...', saved: '✓ 已儲存',
     written: function(lo, la, ts){ return '✓ 已寫入：' + lo.toFixed(6) + ', ' + la.toFixed(6) + ' · ' + ts; },
     saved_toast: '✓ 座標已成功寫入模組，定位服務開關關閉後，等待至少 10 秒鐘，再次開啟才會生效',
-    save_failed: '✗ 儲存失敗 - 請檢查模組設定', write_failed: '寫入失敗',
-    no_geo: '瀏覽器不支援定位', getting_loc: '取得位置中...', got_loc: '已取得目前位置',
+    save_failed: '✗ 儲存失敗 - 請檢查模組設定位置', write_failed: '中寫入失敗',
+    no_geo:... '瀏覽器不',支援定位', getting_loc: '取得 got_loc: '已取得目前位置',
     loc_failed: function(m){ return '定位失敗：' + m; },
     paste_first: '請貼上地圖連結或座標', parse_failed: '無法解析座標，請檢查連結格式', parsing: '解析中...',
     parsed: function(lo, la){ return '已解析：' + lo.toFixed(4) + ', ' + la.toFixed(4); },
@@ -379,29 +384,36 @@ function setLang(l) {
   applyI18n();
 }
 
-const map = L.map('map').setView([20, 0], 2);
-const tiles = {
-  satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, attribution:'ArcGIS'}),
-  wgs84: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, attribution:'ArcGIS WGS84'}),
-  standard: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'\\u00a9 OSM'}),
-  dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {maxZoom:19, attribution:'\\u00a9 Carto'}),
-  amap: L.tileLayer('https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}', {maxZoom:18, subdomains:'1234', attribution:'\\u00a9 Amap'}),
-  voyager: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom:19, attribution:'\\u00a9 Carto'})
-};
-let currentLayer = tiles.satellite;
-currentLayer.addTo(map);
-function switchLayer(name) {
-  map.removeLayer(currentLayer);
-  currentLayer = tiles[name];
+// 只有在 Leaflet 載入成功時才初始化地圖
+let map = null;
+if (typeof L !== 'undefined') {
+  map = L.map('map').setView([20, 0], 2);
+  const tiles = {
+    satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, attribution:'ArcGIS'}),
+    wgs84: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, attribution:'ArcGIS WGS84'}),
+    standard: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'\\u00a9 OSM'}),
+    dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {maxZoom:19, attribution:'\\u00a9 Carto'}),
+    amap: L.tileLayer('https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}', {maxZoom:18, subdomains:'1234', attribution:'\\u00a9 Amap'}),
+    voyager: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom:19, attribution:'\\u00a9 Carto'})
+  };
+  let currentLayer = tiles.satellite;
   currentLayer.addTo(map);
-  document.querySelectorAll('.layer-btn').forEach(b => b.classList.toggle('active', b.dataset.layer === name));
+  window.switchLayer = function(name) {
+    map.removeLayer(currentLayer);
+    currentLayer = tiles[name];
+    currentLayer.addTo(map);
+    document.querySelectorAll('.layer-btn').forEach(b => b.classList.toggle('active', b.dataset.layer === name));
+  };
+  let marker = L.marker([lat, lon], {draggable:true});
+  let markerShown = false;
+  window.showMarker = function() { if (!markerShown) { marker.addTo(map); markerShown = true; } };
+  marker.on('dragend', e => { const p=e.target.getLatLng(); setPos(p.lat, p.lng); });
+  map.on('click', e => { setPos(e.latlng.lat, e.latlng.lng); });
 }
-let marker = L.marker([lat, lon], {draggable:true});
-let markerShown = false;
-function showMarker() { if (!markerShown) { marker.addTo(map); markerShown = true; } }
 
-marker.on('dragend', e => { const p=e.target.getLatLng(); setPos(p.lat, p.lng); });
-map.on('click', e => { setPos(e.latlng.lat, e.latlng.lng); });
+// 讓輸入框與變數同步（即使手動輸入也能生效）
+document.getElementById('cvLat').addEventListener('input', function(e) { lat = parseFloat(e.target.value) || 0; });
+document.getElementById('cvLon').addEventListener('input', function(e) { lon = parseFloat(e.target.value) || 0; });
 
 function currentAlt() {
   const el = document.getElementById('altInput');
@@ -420,18 +432,15 @@ function setAltInput(v) {
 }
 
 function updateCoords() {
-  const grid = document.getElementById('coordGrid');
   const coords = document.getElementById('coords');
   if (!selected) {
-    grid.style.display = 'none';
     coords.style.display = '';
     coords.textContent = t('coords_hint');
-    return;
+  } else {
+    coords.style.display = 'none';
   }
-  coords.style.display = 'none';
-  grid.style.display = '';
-  document.getElementById('cvLat').textContent = lat.toFixed(6);
-  document.getElementById('cvLon').textContent = lon.toFixed(6);
+  document.getElementById('cvLat').value = lat ? lat.toFixed(6) : '';
+  document.getElementById('cvLon').value = lon ? lon.toFixed(6) : '';
 }
 
 function updateStatus() {
@@ -442,8 +451,8 @@ function updateStatus() {
 
 function setPos(newLat, newLon, knownAlt) {
   lat = newLat; lon = newLon; selected = true;
-  showMarker();
-  marker.setLatLng([lat, lon]);
+  if (map) window.showMarker();
+  if (map && marker) marker.setLatLng([lat, lon]);
   if (typeof knownAlt === 'number') { elev = Math.round(knownAlt); elevState = 'ok'; elevCache.set(elevKey(lat, lon), elev); }
   updateCoords();
   fetchElevation(lat, lon);
@@ -451,7 +460,7 @@ function setPos(newLat, newLon, knownAlt) {
 
 function moveTo(newLat, newLon, zoom, knownAlt) {
   setPos(newLat, newLon, knownAlt);
-  map.setView([lat, lon], zoom || 15);
+  if (map) map.setView([lat, lon], zoom || 15);
 }
 
 function elevKey(la, lo) { return la.toFixed(4) + ',' + lo.toFixed(4); }
@@ -503,11 +512,11 @@ function copyText(str) {
 }
 
 function copyField(which, btn) {
-  if (!selected) { toast(t('pick_first')); return; }
   let val;
-  if (which === 'lat') val = lat.toFixed(6);
-  else if (which === 'lon') val = lon.toFixed(6);
+  if (which === 'lat') val = lat ? lat.toFixed(6) : '';
+  else if (which === 'lon') val = lon ? lon.toFixed(6) : '';
   else { const a = currentAlt(); if (a === null) { toast(t('alt_na')); return; } val = String(a); }
+  if (!val) { toast(t('pick_first')); return; }
   copyText(val).then(() => {
     toast(t('copied', val));
     if (btn) { const o = btn.textContent; btn.classList.add('success'); btn.textContent = '✓'; setTimeout(() => { btn.textContent = o; btn.classList.remove('success'); }, 1200); }
@@ -523,7 +532,7 @@ function moduleParamString() {
 }
 
 function copyParams(btn) {
-  if (!selected) { toast(t('pick_first')); return; }
+  if (!lat || !lon) { toast(t('pick_first')); return; }
   const s = moduleParamString();
   copyText(s).then(() => {
     toast(t('copied', s));
@@ -567,7 +576,7 @@ function escHtml(s) {
 }
 
 function addFav() {
-  if (!selected) { toast(t('pick_first')); return; }
+  if (!lat || !lon) { toast(t('pick_first')); return; }
   var _fa = currentAlt();
   document.getElementById('favModalCoords').textContent = lon.toFixed(6) + ', ' + lat.toFixed(6) + (_fa !== null ? ('  ·  ' + _fa + ' m') : '');
   document.getElementById('favNameInput').value = '';
@@ -677,7 +686,7 @@ function clearActive() {
 }
 
 async function save() {
-  if (!selected) { toast(t('pick_first')); return; }
+  if (!lat || !lon) { toast(t('pick_first')); return; }
   const btn = document.getElementById('saveBtn');
   btn.textContent = t('saving'); btn.disabled = true;
   showError(false);
