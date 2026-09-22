@@ -13,9 +13,9 @@ export function getPageHtml() {
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icon-180.png">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
-<!-- 改用 cdnjs 的 Leaflet，穩定性較高，避免被代理工具阻擋 -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"><\/script>
+<!-- 換回原本的 unpkg，如果地圖還是空白，請將 unpkg.com 加入代理規則 -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script>
 <style>
 :root {
   --bg:#f4f6fa; --card:#ffffff; --card2:#f0f3f8; --line:#e4e8ef; --inset:#f7f9fc;
@@ -384,8 +384,8 @@ const tiles = {
   satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, attribution:'ArcGIS'}),
   wgs84: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, attribution:'ArcGIS WGS84'}),
   standard: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'\\u00a9 OSM'}),
-  dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png const', {maxZoom:19, attribution:'\\u co00a9 Carto'}),
-  amords =ap: L.tileLayer('https:// documentwebst0{s}.is.autonavi.com/appmaptile?style.getElementById=6&x={x}&y={y}&z={z}', {maxZoom:18, subdomains:'1234', attribution:'\\u00a9 Amap'}),
+  dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {maxZoom:19, attribution:'\\u00a9 Carto'}),
+  amap: L.tileLayer('https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}', {maxZoom:18, subdomains:'1234', attribution:'\\u00a9 Amap'}),
   voyager: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom:19, attribution:'\\u00a9 Carto'})
 };
 let currentLayer = tiles.satellite;
@@ -421,7 +421,7 @@ function setAltInput(v) {
 
 function updateCoords() {
   const grid = document.getElementById('coordGrid');
- ('coords');
+  const coords = document.getElementById('coords');
   if (!selected) {
     grid.style.display = 'none';
     coords.style.display = '';
@@ -797,7 +797,6 @@ document.getElementById('searchInput').addEventListener('keydown', e => { if(e.k
 document.getElementById('urlInput').addEventListener('keydown', e => { if(e.key==='Enter') parseUrl(); });
 document.getElementById('favNameInput').addEventListener('keydown', e => { if(e.key==='Enter') confirmFav(); });
 
-/* ---- Watermark ---- */
 const WM_TEXT = 'YouTube：賽博工具人 @CyberHandyman 依據 GitHub 開源專案製作';
 function buildWM() {
   let host = document.getElementById('wm');
