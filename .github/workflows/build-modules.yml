@@ -1,0 +1,54 @@
+name: Build modules.js
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "location-spoofer.js"
+      - "location-settings.js"
+      - "location-spoofer-qx.js"
+      - "scripts/gen-modules.mjs"
+      - ".github/workflows/build-modules.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Regenerate modules.js
+        run: node scripts/gen-modules.mjs
+
+      - name: Check for changes
+        id: check
+        run: |
+          if git diff --quiet src/modules.js; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "modules.js 沒有變化"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "modules.js 有變化"
+          fi
+
+      - name: Commit and push
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/modules.js
+          git commit -m "chore: 自動重新產生 modules.js [skip ci]"
+          git push
