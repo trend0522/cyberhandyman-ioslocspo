@@ -279,7 +279,7 @@ const I18N = {
     status_hint: '選好位置後點擊「儲存到裝置」寫入代理工具',
     modal_title: '收藏此位置', modal_ph: '輸入備註名稱（例如：公司、家）', cancel: '取消', save_short: '儲存',
     acc: '精確度', restore: '還原真實定位', restored: '✓ 虛擬定位已清除。請將定位服務關閉、代理開關關閉，等待至少 10 秒後再開啟即生效。', hacc: '水平精確度', vacc: '垂直精確度', jitter: '擾動半徑（公尺）',
-    querying: '查詢中...', no_saved: '無已儲存的座標', query_failed: '查詢失敗（需代理模組支援）', cleared: '已清除',
+    querying: '查詢中...', no_saved: '沒有已儲存的座標', query_failed: '查詢失敗（需代理模組支援）', cleared: '已清除',
     fav_empty: '尚無收藏，選好位置後點擊「收藏位置」',
     active_now: '✓ 當前生效', del: '刪除',
     pick_first: '請先在地圖上選擇一個位置',
@@ -300,7 +300,7 @@ const I18N = {
     paste_first: '請貼上地圖連結或座標', parse_failed: '無法解析座標，請檢查連結格式', parsing: '解析中...',
     parsed: function(lo, la){ return '已解析：' + lo.toFixed(4) + ', ' + la.toFixed(4); },
     enter_place: '請輸入地名', searching: '搜尋中...',
-    not_found: function(q){ return '未找到：' + q; }, search_failed: '搜尋失敗',
+    not_found: function(q){ return '找不到：' + q; }, search_failed: '搜尋失敗',
     copied: function(x){ return '已複製：' + x; }, copy_failed: '複製失敗，請手動選取',
     alt_unknown_copy: '海拔尚未取得，僅複製經緯度'
   },
