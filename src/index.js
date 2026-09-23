@@ -53,7 +53,7 @@ app.get("/location-spoofer-qx.js", (c) => c.body(b64ToBytes(LOCATION_SPOOFER_QX_
 
 function sgmodule(origin) {
   return String.raw`#!name=iOS Location Spoofer (Stateless)
-#!desc=任何售卖本项目/模块的都是骗子，请立即联系退款。无状态版：坐标写入每台设备各自的本机存储、可公开共用、多人互不覆盖。搭配选点页使用。适用于 Shadowrocket / Surge / Egern。
+#!desc=無狀態版：座標寫入每台裝置各自的本機儲存、可公開共用、多人互不覆蓋。搭配選點頁使用。適用於 Shadowrocket / Surge / Egern。
 #!homepage=${origin}
 
 [Script]
@@ -65,7 +65,7 @@ hostname = %APPEND% gs-loc.apple.com, gs-loc-cn.apple.com, bluedot.is.autonavi.c
 }
 function stoverride(origin) {
   return String.raw`name: iOS Location Spoofer (Stateless)
-desc: "任何售卖本项目/模块的都是骗子，请立即联系退款。iOS Location Spoofer 无状态版 (Stash)"
+desc: "iOS Location Spoofer 無狀態版 (Stash)"
 homepage: ${origin}
 
 http:
@@ -97,7 +97,7 @@ script-providers:
 }
 function lnplugin(origin) {
   return String.raw`#!name=iOS Location Spoofer (Stateless)
-#!desc=任何售卖本项目/模块的都是骗子，请立即联系退款。无状态版，配合选点页使用。Loon 插件。
+#!desc=無狀態版，配合選點頁使用。Loon 外掛。
 #!homepage=${origin}
 
 [Script]
@@ -111,7 +111,7 @@ hostname = gs-loc.apple.com, gs-loc-cn.apple.com, bluedot.is.autonavi.com, blued
 // not auto-merge MITM hostnames the way Surge modules do, so the user must add them manually.
 function qxsnippet(origin) {
   return String.raw`#!name=iOS Location Spoofer (Stateless)
-#!desc=任何售卖本项目/模块的都是骗子，请立即联系退款。无状态版。Quantumult X 用「重写(rewrite)引用」(非模块/插件)。MITM 主机名需手动加进 QX 设置 → MITM。
+#!desc=無狀態版。Quantumult X 使用「重寫 (rewrite) 引用」（非模組／外掛）。MITM 主機名稱需手動加進 QX 設定 → MITM。
 #!homepage=${origin}
 
 [rewrite_local]
@@ -164,12 +164,12 @@ app.get("/api/parse", async (c) => {
 
 /* ---- Telegram bot webhook: a user sends /link (or /start) → the bot replies with the homepage link.
    One-time setup:
-     1) @BotFather → 你的 bot (CyberHandymanMSG_bot) → 拿 API token
-     2) 终端:  wrangler secret put TG_BOT_TOKEN            (粘贴 token)
-     3) (可选) wrangler secret put TG_WEBHOOK_SECRET       (任意随机串，防伪造)
-     4) 注册回调:  curl "https://api.telegram.org/bot<TOKEN>/setWebhook?url=<origin>/tg&secret_token=<SECRET>"
-     5) @BotFather → /setprivacy → 选该 bot → Disable      (这样它才能读到群里的 /link)
-   Token 只存在 Cloudflare Secret 里，不写进代码。未配置时本路由静默返回 ok，不影响其它功能。 */
+     1) @BotFather → 你的 bot (CyberHandymanMSG_bot) → 取得 API token
+     2) 終端機:  wrangler secret put TG_BOT_TOKEN            (貼上 token)
+     3) (可選) wrangler secret put TG_WEBHOOK_SECRET       (任意隨機字串，防止偽造)
+     4) 註冊回呼:  curl "https://api.telegram.org/bot<TOKEN>/setWebhook?url=<origin>/tg&secret_token=<SECRET>"
+     5) @BotFather → /setprivacy → 選該 bot → Disable      (這樣它才能讀到群組裡的 /link)
+   token 只存在 Cloudflare Secret 裡，不寫進程式碼。未設定時本路由靜默回傳 ok，不影響其他功能。 */
 app.post("/tg", async (c) => {
   const secret = c.env && c.env.TG_WEBHOOK_SECRET;
   if (secret && c.req.header("X-Telegram-Bot-Api-Secret-Token") !== secret) {
@@ -186,9 +186,8 @@ app.post("/tg", async (c) => {
   if (token && chatId && (cmd === "/link" || cmd === "/links" || cmd === "/start")) {
     const origin = new URL(c.req.url).origin;
     const reply =
-      "📍 iOS 虚拟定位 · 选点主页\n" + origin + "/\n\n" +
-      "▶️ 视频教程：https://youtu.be/EspuRlKWUxc\n\n" +
-      "⚠️ 免费开源，禁止售卖。若你是付款进来的，请立即联系退款——任何售卖者都是骗子。";
+      "📍 iOS 虛擬定位 · 選點首頁\n" + origin + "/\n\n" +
+      "▶️ 影片教學：https://youtu.be/EspuRlKWUxc";
     await fetch("https://api.telegram.org/bot" + token + "/sendMessage", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -204,7 +203,7 @@ app.onError((e, c) => {
 });
 
 /* ---- Geo-restriction: block mainland China (CN); allow everywhere else ---- */
-const BLOCK_HTML = `<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Not available in your region</title><style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0b0b0f;color:#f2f2f7;font-family:-apple-system,system-ui,sans-serif;text-align:center;padding:28px}div{max-width:520px}h1{font-size:20px;margin-bottom:14px}p{color:#9a9aa8;font-size:14px;line-height:1.8}</style></head><body><div><h1>本服务在你所在地区不可用</h1><p>This service is not available in your region.<br><br>本项目免费开源、禁止售卖；仅面向中国大陆以外地区提供访问。<br>This free & open-source project is not for sale, and is served only outside mainland China.</p></div></body></html>`;
+const BLOCK_HTML = `<!DOCTYPE html><html lang="zh-Hant-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Not available in your region</title><style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0b0b0f;color:#f2f2f7;font-family:-apple-system,system-ui,sans-serif;text-align:center;padding:28px}div{max-width:520px}h1{font-size:20px;margin-bottom:14px}p{color:#9a9aa8;font-size:14px;line-height:1.8}</style></head><body><div><h1>本服務在你所在地區無法使用</h1><p>This service is not available in your region.<br><br>本專案僅提供給中國大陸以外地區存取。<br>This project is served only outside mainland China.</p></div></body></html>`;
 
 export default {
   async fetch(request, env, ctx) {
