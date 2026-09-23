@@ -68,7 +68,7 @@ function extractRaw(s, opts) {
   // 百度網頁版把 BD09MC 公尺制座標寫進路徑：/poi/名稱/@12709535.375,2529761.45,19z
   // 位數（6~9）本身就把它和經緯度形式的 @ 區分開了。
   // 這是港澳台百度連結在伺服器端唯一能取得座標的形式 —— 那些地區的分享連結展開後
-  // 內文裡沒有座標，得由頁面腳本帶反爬權杖去查 detailConInfo，Worker 重現不了。
+  // 內文裡沒有座標，得由頁面腳本帶反爬 token 去查 detailConInfo，Worker 重現不了。
   m = str.match(/baidu\.com\/[^\s]*?@(-?\d{6,9}(?:\.\d+)?)(?:,|%2C)(-?\d{6,9}(?:\.\d+)?)/i);
   if (m) {
     const bd = bd09mcToBd09(+m[1], +m[2]);
@@ -212,7 +212,7 @@ export async function parseCoords(raw) {
     }
   }
   // 百度對大陸 POI 會把座標直接輸出在行動版頁面裡，港澳台的則不會 —— 那邊要靠頁面
-  // 腳本帶 auth/seckey 反爬權杖去查 detailConInfo，伺服器端無法重現。與其只說一句
+  // 腳本帶 auth/seckey 反爬 token 去查 detailConInfo，伺服器端無法重現。與其只說一句
   // 「解析不了」，不如告訴使用者那條確實可行的方法。
   if (urlMatch && isBaiduHost(target)) {
     throw new Error(
