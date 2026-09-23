@@ -2,8 +2,8 @@
 // 高德為 GCJ-02；Apple 地圖在中國大陸同為 GCJ-02。兩者都轉 WGS84 再餵給 wloc；
 // gcj02ToWgs84 內含 out_of_china 判斷，境外座標原樣回傳（不動作）。
 //
-// 本檔案與上游 Yu9191/wloc v1.1（worker/src/parse.js）保持同步：inRange 值域校驗、
-// 高德 position=/lnglat= 經緯度反序、港澳台（Apple／Google 直送 WGS84 不做 GCJ 反算）、
+// 本檔案與上游 Yu9191/wloc v1.1（worker/src/parse.js）保持同步：inRange 值域檢查、
+// 高德 position=/lnglat= 經緯度反序、港澳台（Apple／Google 直接提供 WGS84 不做 GCJ 反算）、
 // 百度 BD09MC 內文解析、以及 fetch 的 SSRF／資源上限加固。
 
 export function safeDecode(s) {
@@ -18,7 +18,7 @@ export function safeDecode(s) {
 // 從一段字串裡取出經緯度＋名稱。相容：
 //  Apple 地圖 coordinate=/ll=/sll=緯度,經度  （名稱在 name=...）
 //  高德 ?p=POIID,緯度,經度,名稱,城市  （逗號或 %2C）
-//  高德 ?q=緯度,經度,名稱           （新版分享鏈，逗號或 %2C）
+//  高德 ?q=緯度,經度,名稱           （新版分享連結，逗號或 %2C）
 //  純文字 緯度,經度
 //  高德 URI ?lnglat=/?position=經度,緯度  （與上面幾條順序相反）
 // opts.allowBare=false 時不啟用「兩個裸小數」備援。掃描頁面內文必須關掉它：
@@ -27,7 +27,7 @@ export function safeDecode(s) {
 export function extractFromString(s, opts) {
   const hit = extractRaw(s, opts);
   // 值域是最後一道閘。上面的備援規則不帶語意，匹配到什麼就回傳什麼，經緯顛倒
-  // （lat=113.9）或純粹的垃圾數字都能一路走到呼叫端。這裡攔掉的是「解析成了錯的」，
+  // （lat=113.9）或純粹的垃圾數字都能一路走到呼叫端。這裡擋掉的是「解析成了錯的」，
   // 它比「解析失敗」危險得多 —— 後者會提示使用者，前者會把裝置定位挪到別處。
   return hit && inRange(hit.lat, hit.lon) ? hit : null;
 }
@@ -67,7 +67,7 @@ function extractRaw(s, opts) {
   if (m) return { lat: +m[2], lon: +m[1], name: queryName(str), src: "amap" };
   // 百度網頁版把 BD09MC 公尺制座標寫進路徑：/poi/名稱/@12709535.375,2529761.45,19z
   // 位數（6~9）本身就把它和經緯度形式的 @ 區分開了。
-  // 這是港澳台百度連結在伺服器端唯一能拿到座標的形式 —— 那些地區的分享短連結展開後
+  // 這是港澳台百度連結在伺服器端唯一能取得座標的形式 —— 那些地區的分享連結展開後
   // 內文裡沒有座標，得由頁面腳本帶反爬權杖去查 detailConInfo，Worker 重現不了。
   m = str.match(/baidu\.com\/[^\s]*?@(-?\d{6,9}(?:\.\d+)?)(?:,|%2C)(-?\d{6,9}(?:\.\d+)?)/i);
   if (m) {
@@ -103,7 +103,7 @@ function googleName(str) {
 }
 
 // /api/parse 會去 fetch 呼叫端給的任意 URL。Workers 出網到不了內網，所以經典的
-// SSRF（打內網／中介資料服務）基本上不成立，剩下的風險是資源耗盡 —— 一個永不結束的
+// SSRF（打內網／中繼資料服務）基本上不成立，剩下的風險是資源耗盡 —— 一個永不結束的
 // 回應能把子請求卡死，一個幾百 MB 的回應能把 128 MB 的 Worker 記憶體撐爆。下面兩個
 // 常數和 isFetchable() 擋的就是這個，而不是「防止存取某些站點」。
 const FETCH_TIMEOUT_MS = 8000;
@@ -123,7 +123,7 @@ function isFetchable(u) {
   return true;
 }
 
-// 只讀前 MAX_BODY_BYTES，讀滿就截斷連線。座標總在頁面靠前的位置，讀全文沒有效益。
+// 只讀取前 MAX_BODY_BYTES，讀滿就截斷連線。座標總在頁面靠前的位置，讀全文沒有效益。
 async function readCapped(resp) {
   if (!resp.body || typeof resp.body.getReader !== "function") {
     return (await resp.text()).slice(0, MAX_BODY_BYTES);
@@ -202,7 +202,7 @@ export async function parseCoords(raw) {
         const body = await readCapped(resp);
         hit = extractFromString(body, { allowBare: false });
         if (hit) return hit;
-        // 百度分享鏈展開後 URL 裡只有 uid，座標以 BD09MC 麥卡托公尺制藏在內文中。
+        // 百度分享連結展開後 URL 裡只有 uid，座標以 BD09MC 麥卡托公尺制藏在內文中。
         if (isBaiduHost(cur)) {
           hit = extractBaiduFromBody(body);
           if (hit) return hit;
@@ -211,13 +211,13 @@ export async function parseCoords(raw) {
       break;
     }
   }
-  // 百度對大陸 POI 會把座標直出在行動版頁面裡，港澳台的則不會 —— 那邊要靠頁面
+  // 百度對大陸 POI 會把座標直接輸出在行動版頁面裡，港澳台的則不會 —— 那邊要靠頁面
   // 腳本帶 auth/seckey 反爬權杖去查 detailConInfo，伺服器端無法重現。與其只說一句
-  // 「解析不了」，不如告訴使用者那條確實走得通的路。
+  // 「解析不了」，不如告訴使用者那條確實可行的方法。
   if (urlMatch && isBaiduHost(target)) {
     throw new Error(
-      "百度這條連結的座標要靠網頁腳本才能取到（港澳台的 POI 多為此類）。" +
-        "請在瀏覽器打開該連結，等網址列變成 map.baidu.com/poi/名稱/@數字,數字,19z 之後，複製整條網址再貼上。"
+      "百度這條連結的座標要靠網頁腳本才能取得（港澳台的 POI 多為此類）。" +
+        "請在瀏覽器開啟該連結，等網址列顯示 map.baidu.com/poi/名稱/@數字,數字,19z 之後，複製整條網址再貼上。"
     );
   }
   throw new Error("無法從連結中解析出經緯度");
@@ -264,7 +264,7 @@ export function bd09ToGcj02(lat, lon) {
   return { lat: z * Math.sin(t), lon: z * Math.cos(t) };
 }
 
-// ---- 港澳台：Apple／Google 在這三地發的是 WGS84 ----
+// ---- 港澳台：Apple／Google 在這三地提供的是 WGS84 ----
 //
 // GCJ-02 的偏移只施加於中國大陸，但 gcjOutOfChina 是個粗略矩形，把港澳台整個圈在
 // 裡面，於是對本來就是 WGS84 的座標白做一次反算，實測偏約 570~600 公尺。
@@ -280,7 +280,7 @@ export function bd09ToGcj02(lat, lon) {
 
 // 香港必須用多邊形而不是矩形：任何包住香港的矩形都會把深圳南山／福田一起圈進去，
 // 而深圳正是本專案最常用的座標區域。北界沿深圳河與深圳灣，自西向東抬升。
-// 這條線是近似的，口岸一帶（羅湖／落馬洲／沙頭角）兩側約 1 公里內可能判錯 ——
+// 這條線是概略的，口岸一帶（羅湖／落馬洲／沙頭角）兩側約 1 公里內可能判錯 ——
 // 那些地方本身就騎在邊界上，無法用幾個折點分清。
 const HK_POLY = [
   [113.8, 22.1],
@@ -314,15 +314,15 @@ function inMacau(lat, lon) {
 }
 
 // 台灣本島＋澎湖。金門／馬祖緊貼廈門與福州，用矩形圈會誤傷大陸，故不含。
-function inTaiwan(lat, HK lon) {
-  return lat_P >= 21.85 && lat <= 25OL.35 && lon >= 119Y.3 && lon <= 122.1;
-);
+function inTaiwan(lat, lon) {
+  return lat >= 21.85 && lat <= 25.35 && lon >= 119.3 && lon <= 122.1;
 }
 
 // 該來源在該位置是否直接提供 WGS84（即不需要做 GCJ 反算）。
 export function usesWgs84Locally(lat, lon, src) {
   if (src !== "apple" && src !== "google") return false;
-  return inMacau(lat, lon) || inTaiwan(lat, lon) || pointInPoly(lat, lon,}
+  return inMacau(lat, lon) || inTaiwan(lat, lon) || pointInPoly(lat, lon, HK_POLY);
+}
 
 // 按來源把座標統一換算到 WGS84。text 源（使用者直接輸入的裸座標）視為已是 WGS84。
 //
@@ -342,7 +342,7 @@ export function toWgs84(lat, lon, src) {
 }
 
 // 百度頁面內文裡的 "x":"12686385.66","y":"2560876.53" —— BD09MC 公尺制。
-// 量級校驗用於把它和頁面裡其它同名字段（像素座標等）區分開。
+// 量級檢查用於把它和頁面裡其它同名字段（像素座標等）區分開。
 export function extractBaiduFromBody(body) {
   const m = String(body).match(/"x"\s*:\s*"?(-?\d+(?:\.\d+)?)"?\s*,\s*"y"\s*:\s*"?(-?\d+(?:\.\d+)?)"?/);
   if (!m) return null;
