@@ -24,7 +24,6 @@ body{
 }
 .wrap{ max-width:600px; margin:0 auto; padding:20px 16px calc(44px + env(safe-area-inset-bottom)); }
 
-/* --- header / branding --- */
 header{ text-align:center; padding:8px 0 6px; }
 header .logowrap{ position:relative; width:74px; margin:0 auto 14px; }
 header .logo{ width:74px; height:74px; border-radius:20px; display:block; box-shadow:0 0 0 1px var(--line),0 10px 30px rgba(43,125,233,.15); }
@@ -34,7 +33,6 @@ h1{ font-size:23px; font-weight:800; letter-spacing:.3px; color:var(--txt); }
 .synced{ font-size:12px; color:var(--green); font-weight:700; margin-top:8px; }
 .synced a{ color:var(--green); text-decoration:underline; }
 
-/* --- primary CTA --- */
 .ctas{ display:flex; justify-content:center; margin:18px 0 4px; }
 .enter{ flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:17px 14px; border:none; border-radius:14px; font-size:16px; font-weight:800; cursor:pointer; text-decoration:none; transition:transform .12s,box-shadow .12s; font-family:inherit; }
 .enter:active{ transform:scale(.97); }
@@ -42,14 +40,12 @@ h1{ font-size:23px; font-weight:800; letter-spacing:.3px; color:var(--txt); }
 
 .divider{ height:1px; background:linear-gradient(90deg,transparent,var(--line),transparent); margin:24px 0 20px; }
 
-/* --- section heads with accent bar --- */
 h2{ font-size:16px; font-weight:800; margin-bottom:4px; display:flex; align-items:center; gap:9px; }
 h2::before{ content:""; width:4px; height:16px; border-radius:2px; background:linear-gradient(180deg,var(--brand),#5ba0f0); }
 .sub{ font-size:12.5px; color:var(--muted); margin:0 0 14px 13px; }
 .note{ background:#f5f9ff; border:1px solid #dbe8fb; border-left:4px solid var(--brand); border-radius:11px; padding:12px 14px; font-size:12.5px; color:#4a5568; margin-bottom:16px; }
 .note b{ color:var(--txt); }
 
-/* --- platform cards --- */
 .plat{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px; margin-bottom:12px; box-shadow:0 2px 10px rgba(15,25,45,.04); }
 .plat .big{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:14px; border:none; border-radius:11px; background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#fff; font-size:15.5px; font-weight:800; cursor:pointer; text-align:center; text-decoration:none; transition:filter .12s,transform .12s; }
 .plat .big:active{ filter:brightness(1.1); transform:scale(.98); }
@@ -60,7 +56,6 @@ h2::before{ content:""; width:4px; height:16px; border-radius:2px; background:li
 .plat .copy.ok{ background:var(--green); border-color:var(--green); color:#fff; }
 .plat .pnote{ font-size:11.5px; color:var(--muted); margin-top:7px; line-height:1.6; }
 
-/* --- info boxes --- */
 .mitm{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:13px 15px; font-size:12.5px; color:#4a5568; margin-top:16px; box-shadow:0 2px 10px rgba(15,25,45,.04); }
 .mitm b{ color:var(--txt); }
 .mitm code{ display:inline-block; font-family:"SF Mono",ui-monospace,monospace; font-size:11.5px; color:var(--mono); word-break:break-all; line-height:2; }
@@ -80,7 +75,7 @@ footer b{ color:var(--brand); }
     <h1>iOS Location Spoofer · 虛擬定位</h1>
     <p class="credit">
       衍生自開源專案：<a href="https://github.com/Yu9191/wloc" target="_blank" rel="noopener">Yu9191</a> ·
-      <a href="https://港澳github.com/mekos2772/ios-location-spoofer" target="_blank" rel="noopener">mekos2772</a> ·
+      <a href="https://github.com/mekos2772/ios-location-spoofer" target="_blank" rel="noopener">mekos2772</a> ·
       <a href="https://github.com/acheong08/ios-location-spoofer" target="_blank" rel="noopener">acheong08</a>
     </p>
     <p class="synced">✅ 已同步上游 <a href="https://github.com/Yu9191/wloc/releases" target="_blank" rel="noopener">Yu9191/wloc v1.1</a>：隨機擾動半徑 · 台/百度座標解析</p>
