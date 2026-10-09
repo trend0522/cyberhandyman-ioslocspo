@@ -7,22 +7,41 @@ export function getLandingHtml() {
 <title>iOS Location Spoofer · 虛擬定位</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#ffffff">
+<script>try{var th=localStorage.getItem('theme');if(th==='light'||th==='dark')document.documentElement.setAttribute('data-theme',th);}catch(e){}<\/script>
 <link rel="apple-touch-icon" href="/icon-180.png">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <style>
+/* tokens identical to /picker (src/page.js) — same Apple system colors, same tri-state theme switch */
 :root{
-  --bg:#f4f6fa; --card:#ffffff; --card2:#f0f3f8; --line:#e4e8ef;
-  --brand:#0062d9; --brand2:#1c62c4; --green:#1e7a35; --green2:#059669;
-  --red:#ef4444; --amber:#f59e0b; --txt:#1e293b; --muted:#5b6779; --mono:#0866a8;
+  --bg:#ffffff; --card:#ffffff; --card2:#f5f5f7; --line:#e5e5ea; --inset:#f2f2f7;
+  --brand:#0062d9; --brand2:#0056b3; --green:#1e7a35; --green2:#059669;
+  --red:#d70015; --amber:#ff9500; --txt:#1c1c1e; --muted:#6e6e73; --mono:#5856d6;
+  --on-accent:#ffffff; --press:#e5e5ea;
+}
+html[data-theme=dark]{
+  --bg:#0b0b0d; --card:#1c1c1e; --card2:#16161a; --line:#38383a; --inset:#2c2c2e;
+  --brand:#0a84ff; --brand2:#409cff; --green:#30d158; --green2:#22b87a;
+  --red:#ff453a; --amber:#ff9f0a; --txt:#ebebf0; --muted:#a1a1a6; --mono:#8ab8ff;
+  --on-accent:#0b0b0d; --press:#3a3a3c;
+}
+@media (prefers-color-scheme:dark){
+  html:not([data-theme]){
+    --bg:#0b0b0d; --card:#1c1c1e; --card2:#16161a; --line:#38383a; --inset:#2c2c2e;
+    --brand:#0a84ff; --brand2:#409cff; --green:#30d158; --green2:#22b87a;
+    --red:#ff453a; --amber:#ff9f0a; --txt:#ebebf0; --muted:#a1a1a6; --mono:#8ab8ff;
+    --on-accent:#0b0b0d; --press:#3a3a3c;
+  }
 }
 *{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 body{
-  font-family:-apple-system,system-ui,"SF Pro","PingFang TC","Helvetica Neue","Microsoft JhengHei",sans-serif;
+  font-family:-apple-system,system-ui,"SF Pro TC","PingFang TC","Helvetica Neue",sans-serif;
   color:var(--txt); line-height:1.5;
-  background:var(--bg);
+  background:var(--card2);
   -webkit-font-smoothing:antialiased;
 }
 .wrap{ max-width:600px; margin:0 auto; padding:20px 16px calc(44px + env(safe-area-inset-bottom)); }
+.theme-fab{ position:fixed; top:14px; right:14px; width:44px; height:44px; display:flex; align-items:center; justify-content:center; border:1px solid var(--line); border-radius:12px; background:var(--card); color:var(--txt); cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,.06); z-index:98; font-family:inherit; }
+.theme-fab svg{ width:18px; height:18px; }
 
 header{ text-align:center; padding:8px 0 6px; }
 header .logowrap{ position:relative; width:74px; margin:0 auto 14px; }
@@ -36,27 +55,27 @@ h1{ font-size:23px; font-weight:800; letter-spacing:.3px; color:var(--txt); }
 .ctas{ display:flex; justify-content:center; margin:18px 0 4px; }
 .enter{ flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:17px 14px; border:none; border-radius:14px; font-size:16px; font-weight:800; cursor:pointer; text-decoration:none; transition:transform .12s,box-shadow .12s; font-family:inherit; }
 .enter:active{ transform:scale(.97); }
-.enter.go{ background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#fff; box-shadow:0 10px 26px rgba(43,125,233,.25); }
+.enter.go{ background:var(--brand); color:var(--on-accent); }
 
 .divider{ height:1px; background:linear-gradient(90deg,transparent,var(--line),transparent); margin:24px 0 20px; }
 
 h2{ font-size:16px; font-weight:800; margin-bottom:4px; display:flex; align-items:center; gap:9px; }
-h2::before{ content:""; width:4px; height:16px; border-radius:2px; background:linear-gradient(180deg,var(--brand),#5ba0f0); }
+h2::before{ content:""; width:3px; height:14px; border-radius:2px; background:var(--brand); flex:none; }
 .sub{ font-size:12.5px; color:var(--muted); margin:0 0 14px 13px; }
-.note{ background:#f5f9ff; border:1px solid #dbe8fb; border-left:4px solid var(--brand); border-radius:11px; padding:12px 14px; font-size:12.5px; color:#4a5568; margin-bottom:16px; }
+.note{ background:var(--inset); border:1px solid var(--line); border-left:4px solid var(--brand); border-radius:11px; padding:12px 14px; font-size:12.5px; color:var(--muted); margin-bottom:16px; line-height:1.8; }
 .note b{ color:var(--txt); }
 
-.plat{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px; margin-bottom:12px; box-shadow:0 2px 10px rgba(15,25,45,.04); }
-.plat .big{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:14px; border:none; border-radius:11px; background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#fff; font-size:15.5px; font-weight:800; cursor:pointer; text-align:center; text-decoration:none; transition:filter .12s,transform .12s; }
-.plat .big:active{ filter:brightness(1.1); transform:scale(.98); }
+.plat{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,.04); }
+.plat .big{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:14px; border:none; border-radius:11px; background:var(--brand); color:var(--on-accent); font-size:15.5px; font-weight:800; cursor:pointer; text-align:center; text-decoration:none; transition:filter .12s,transform .12s; }
+.plat .big:active{ filter:brightness(.92); transform:scale(.97); }
 .plat .line{ display:flex; align-items:center; gap:8px; margin-top:9px; }
-.plat .url{ flex:1; min-width:0; font-family:"SF Mono",ui-monospace,monospace; font-size:11px; color:var(--muted); background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:8px 10px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.plat .copy{ flex:none; padding:8px 15px; border:1px solid var(--line); border-radius:8px; background:var(--card2); color:var(--txt); font-size:12.5px; font-weight:600; cursor:pointer; transition:all .12s; font-family:inherit; }
-.plat .copy:active{ background:#e4e8ef; }
-.plat .copy.ok{ background:var(--green); border-color:var(--green); color:#fff; }
+.plat .url{ flex:1; min-width:0; font-family:"SF Mono",ui-monospace,monospace; font-size:11px; color:var(--muted); background:var(--inset); border:1px solid var(--line); border-radius:10px; padding:8px 10px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.plat .copy{ flex:none; padding:8px 15px; min-height:40px; border:1px solid var(--line); border-radius:8px; background:var(--card2); color:var(--txt); font-size:12.5px; font-weight:600; cursor:pointer; transition:all .12s; font-family:inherit; }
+.plat .copy:active{ background:var(--press); }
+.plat .copy.ok{ background:var(--green); border-color:var(--green); color:var(--on-accent); }
 .plat .pnote{ font-size:11.5px; color:var(--muted); margin-top:7px; line-height:1.6; }
 
-.mitm{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:13px 15px; font-size:12.5px; color:#4a5568; margin-top:16px; box-shadow:0 2px 10px rgba(15,25,45,.04); }
+.mitm{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; font-size:12.5px; color:var(--muted); margin-top:12px; box-shadow:0 1px 4px rgba(0,0,0,.04); }
 .mitm b{ color:var(--txt); }
 .mitm code{ display:inline-block; font-family:"SF Mono",ui-monospace,monospace; font-size:11.5px; color:var(--mono); word-break:break-all; line-height:2; }
 .mitm .hosts{ margin-top:8px; padding:10px 12px; background:var(--bg); border:1px solid var(--line); border-radius:9px; }
@@ -70,6 +89,7 @@ footer b{ color:var(--brand); }
 </head>
 <body>
 <div class="wrap">
+  <button class="theme-fab" id="themeBtn" type="button" aria-label="主題"></button>
   <header>
     <div class="logowrap"><img class="logo" src="/icon.svg" alt=""></div>
     <h1>iOS Location Spoofer · 虛擬定位</h1>
@@ -112,6 +132,30 @@ footer b{ color:var(--brand); }
 <div class="toast" id="toast"></div>
 <script>
 var origin = location.origin;
+/* tri-state theme, same localStorage('theme') key + icons as /picker */
+var THEME_ICONS = {
+  auto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg>',
+  light: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg>',
+  dark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/></svg>'
+};
+var themePref = 'auto';
+try { var tv = localStorage.getItem('theme'); if (tv === 'light' || tv === 'dark') themePref = tv; } catch(e) {}
+function applyTheme(){
+  if (themePref === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', themePref);
+  var darkNow = themePref === 'dark' || (themePref === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme:dark)').matches);
+  var meta = document.querySelector('meta[name=theme-color]');
+  if (meta) meta.setAttribute('content', darkNow ? '#0b0b0d' : '#ffffff');
+  document.getElementById('themeBtn').innerHTML = THEME_ICONS[themePref];
+}
+function cycleTheme(){
+  themePref = themePref === 'auto' ? 'light' : themePref === 'light' ? 'dark' : 'auto';
+  try { localStorage.setItem('theme', themePref); } catch(e) {}
+  applyTheme();
+  toast('主題：' + (themePref==='auto'?'跟隨系統':themePref==='light'?'淺色':'深色'));
+}
+applyTheme();
+document.getElementById('themeBtn').addEventListener('click', cycleTheme);
 function u(file){ return origin + '/' + file; }
 var qxExtra = ', tag=iOS Location Spoofer, update-interval=172800, opt-parser=true, enabled=true';
 var PLATS = [
