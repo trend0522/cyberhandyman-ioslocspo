@@ -26,7 +26,7 @@ const MANIFEST = {
   display: "standalone",
   orientation: "portrait",
   background_color: "#f2f2f7",
-  theme_color: "#007aff",
+  theme_color: "#0062d9",
   icons: [
     { src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
     { src: "/icon-180.png", sizes: "180x180", type: "image/png", purpose: "any" },

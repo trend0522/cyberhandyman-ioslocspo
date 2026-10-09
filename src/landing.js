@@ -12,8 +12,8 @@ export function getLandingHtml() {
 <style>
 :root{
   --bg:#f4f6fa; --card:#ffffff; --card2:#f0f3f8; --line:#e4e8ef;
-  --brand:#2b7de9; --brand2:#1c62c4; --green:#248a3d; --green2:#059669;
-  --red:#ef4444; --amber:#f59e0b; --txt:#1e293b; --muted:#64748b; --mono:#0b8ce0;
+  --brand:#0062d9; --brand2:#1c62c4; --green:#1e7a35; --green2:#059669;
+  --red:#ef4444; --amber:#f59e0b; --txt:#1e293b; --muted:#5b6779; --mono:#0866a8;
 }
 *{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 body{
