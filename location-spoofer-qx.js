@@ -1,16 +1,20 @@
 /*
- * QX 的 $response.body 給的是 base64 字串（不是 Uint8Array），
- * 所以這版多了一步 base64 → bytes 的轉換，其他邏輯和主版一致。
+ * QX 的 $response.body 给的是 base64 字符串（不是 Uint8Array），
+ * 所以这版多了一步 base64 ↔ bytes 的转换，其他逻辑和主版一样。
  */
 (function () {
   "use strict";
 
   var DEFAULT_CONFIG = {
+    // Stateless default: OFF until the picker writes coordinates to this device's own
+    // $prefs. "Nothing picked yet" then falls through to the real location.
     enabled: false,
     latitude: 37.3349,
     longitude: -122.00902,
     horizontalAccuracy: 39,
     verticalAccuracy: 1000,
+    // Random perturbation radius in metres (Yu9191 v1.1 "扰动半径"). 0 = off. Written
+    // per-device by the picker via location-settings.js ($prefs).
     randomRadius: 0,
     altitude: 530,
     unknownValue4: 3,
@@ -25,6 +29,8 @@
   var ROOT_DROP_FIELDS = { 3: true, 4: true, 33: true };
   var CELL_RESPONSE_FIELDS = { 22: true, 24: true };
   var LOCATION_REPLACED_FIELDS = { 1: true, 2: true, 3: true, 4: true, 5: true, 6: true, 11: true, 12: true };
+
+  // ========== Byte Utilities ==========
 
   function concatBytes(parts) {
     var total = 0, i;
@@ -50,6 +56,8 @@
     for (var i = 0; i < max; i++) out.push(("0" + bytes[i].toString(16)).slice(-2));
     return out.join("");
   }
+
+  // ========== Base64 (QX 专用) ==========
 
   function base64ToBytes(b64) {
     var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -78,13 +86,15 @@
     var out = "";
     for (var i = 0; i < bytes.length; i += 3) {
       var b0 = bytes[i], b1 = i + 1 < bytes.length ? bytes[i + 1] : 0, b2 = i + 2 < bytes.length ? bytes[i + 2] : 0;
-      var triple = (b0 << 16) | (b1 << 8) | b2;
-      out += alphabet[(triple >> 18) & 0x3f] + alphabet[(triple >> 12) & 0x3f];
-      out += i + 1 < bytes.length ? alphabet[(triple >> 6) & 0x3f] : "=";
-      out += i + 2 < bytes.length ? alphabet[triple & 0x3f] : "=";
+      var triplet = (b0 << 16) | (b1 << 8) | b2;
+      out += alphabet[(triplet >> 18) & 0x3f] + alphabet[(triplet >> 12) & 0x3f];
+      out += i + 1 < bytes.length ? alphabet[(triplet >> 6) & 0x3f] : "=";
+      out += i + 2 < bytes.length ? alphabet[triplet & 0x3f] : "=";
     }
     return out;
   }
+
+  // ========== Varint / Protobuf ==========
 
   function encodeVarintUnsigned(value) {
     var v = typeof value === "bigint" ? value : BigInt(value);
@@ -113,9 +123,17 @@
     throw new Error("unterminated varint");
   }
 
-  function makeKey(fieldNumber, wireType) { return encodeVarintUnsigned((BigInt(fieldNumber) << 3n) | BigInt(wireType)); }
-  function makeVarintField(fieldNumber, value) { return concatBytes([makeKey(fieldNumber, 0), encodeVarintSignedInt64(value)]); }
-  function makeLengthDelimitedField(fieldNumber, payload) { return concatBytes([makeKey(fieldNumber, 2), encodeVarintUnsigned(payload.length), payload]); }
+  function makeKey(fieldNumber, wireType) {
+    return encodeVarintUnsigned((BigInt(fieldNumber) << 3n) | BigInt(wireType));
+  }
+
+  function makeVarintField(fieldNumber, value) {
+    return concatBytes([makeKey(fieldNumber, 0), encodeVarintSignedInt64(value)]);
+  }
+
+  function makeLengthDelimitedField(fieldNumber, payload) {
+    return concatBytes([makeKey(fieldNumber, 2), encodeVarintUnsigned(payload.length), payload]);
+  }
 
   function parseFields(bytes) {
     var fields = [], offset = 0;
@@ -155,6 +173,8 @@
 
   function isCellResponseField(fieldNumber) { return CELL_RESPONSE_FIELDS[fieldNumber] === true; }
 
+  // ========== ARPC ==========
+
   function readUInt16BE(bytes, offset) { return (bytes[offset] << 8) | bytes[offset + 1]; }
   function readUInt32BE(bytes, offset) { return ((bytes[offset] * 0x1000000) + ((bytes[offset + 1] << 16) | (bytes[offset + 2] << 8) | bytes[offset + 3])) >>> 0; }
   function writeUInt16BE(value) { return new Uint8Array([(value >> 8) & 0xff, value & 0xff]); }
@@ -191,6 +211,8 @@
   function serializeArpc(arpc) {
     return concatBytes([writeUInt16BE(arpc.version), writePascalString(arpc.locale), writePascalString(arpc.appIdentifier), writePascalString(arpc.osVersion), writeUInt32BE(arpc.functionId), writeUInt32BE(arpc.payload.length), arpc.payload]);
   }
+
+  // ========== Location Patching ==========
 
   function coordToInt(value) { return Math.trunc(Number(value) * 100000000); }
 
@@ -240,6 +262,8 @@
     }
     return { payload: concatBytes(parts), wifiCount: wifiCount, cellCount: cellCount };
   }
+
+  // ========== Response Extraction ==========
 
   function extractPrefixedAppleWLocPayload(responseBytes) {
     if (!responseBytes || responseBytes.length < 10) return null;
@@ -306,6 +330,8 @@
     } catch (err) { return "summary failed: " + err.message; }
   }
 
+  // ========== Config ==========
+
   function normalizeConfig(input) {
     var cfg = {}, key;
     for (key in DEFAULT_CONFIG) { if (Object.prototype.hasOwnProperty.call(DEFAULT_CONFIG, key)) cfg[key] = DEFAULT_CONFIG[key]; }
@@ -334,12 +360,13 @@
     return cfg;
   }
 
+  // Random perturbation (Yu9191 v1.1 "扰动半径") — see location-spoofer.js for details.
   function applyRandomRadius(lat, lon, radiusMeters) {
     var r = Number(radiusMeters);
     if (!Number.isFinite(r) || r <= 0) return { latitude: lat, longitude: lon, distance: 0 };
     var distance = Math.sqrt(Math.random()) * r;
     var bearing = 2 * Math.random() * Math.PI;
-    var angular = distance / 6378137
+    var angular = distance / 6378137;
     var latRad = (lat * Math.PI) / 180;
     var lonRad = (lon * Math.PI) / 180;
     var newLat = Math.asin(Math.sin(latRad) * Math.cos(angular) + Math.cos(latRad) * Math.sin(angular) * Math.cos(bearing));
@@ -352,8 +379,8 @@
   }
 
   function loadConfig() {
-    // 無狀態：從本機 $prefs 讀取選點頁寫入的座標（不發起任何外部網路請求）。
-    // 與 location-settings.js 寫入的欄位一致：enabled/latitude/longitude/altitude/horizontalAccuracy/verticalAccuracy。
+    // 无状态：从本机 $prefs 读取选点页写入的坐标（不发起任何外部网络请求）。
+    // 键与 location-settings.js 写入的一致：enabled/latitude/longitude/altitude/horizontalAccuracy/verticalAccuracy。
     var cfg = {};
     for (var k in DEFAULT_CONFIG) { if (Object.prototype.hasOwnProperty.call(DEFAULT_CONFIG, k)) cfg[k] = DEFAULT_CONFIG[k]; }
     var keys = ["enabled", "latitude", "longitude", "altitude", "horizontalAccuracy", "verticalAccuracy", "randomRadius"];
@@ -374,20 +401,30 @@
     return out;
   }
 
+  // ========== QX Entry Point ==========
+
   function runQX() {
     var hasResponse = typeof $response !== "undefined";
+
     if (hasResponse) {
       var config = loadConfig();
       try {
         if (!config.enabled) { $done({}); return; }
+        // QX v1.0.19+ 起二进制响应走 $response.bodyBytes(ArrayBuffer)，
+        // $response.body 对二进制是空/乱码文本。详见 crossutility/Quantumult-X
+        // 的 sample-bytes-rewrite.js。
         var rawBuf = $response.bodyBytes;
-        if (!rawBuf || (rawBuf.byteLength !== undefined && rawBuf.byteLength === 0)) { $done({}); return; }
+        if (!rawBuf || (rawBuf.byteLength !== undefined && rawBuf.byteLength === 0)) {
+          $done({});
+          return;
+        }
         var responseBytes = rawBuf instanceof Uint8Array ? rawBuf : new Uint8Array(rawBuf);
         if (responseBytes.length < 2) { $done({}); return; }
         if (config.debug) console.log("Location spoofer QX response: " + responseBytes.length + " bytes, head=" + hexPreview(responseBytes, 32));
         var result = spoofAppleResponse(responseBytes, config);
         if (config.debug) console.log("Location spoofer patched " + result.wifiCount + " wifi, " + result.cellCount + " cell, kind=" + result.kind + ", response=" + result.response.length + " bytes");
         if (config.debug) console.log("Location spoofer locations: " + patchedPayloadSummary(result.payload));
+        // QX: 二进制改后响应必须用 $done({bodyBytes: ArrayBuffer}) 回写
         $done({
           bodyBytes: result.response.buffer.slice(
             result.response.byteOffset,
@@ -398,16 +435,27 @@
         if (config.debug) console.log("Location spoofer failed: " + err.message);
         $done({});
       }
-    } else { $done({}); }
+    } else {
+      $done({});
+    }
   }
 
   var api = {
-    DEFAULT_CONFIG: DEFAULT_CONFIG, base64ToBytes: base64ToBytes, bytesToBase64: bytesToBase64,
-    patchAppleWLocPayload: patchAppleWLocPayload, spoofAppleResponse: spoofAppleResponse,
-    extractAppleWLocPayload: extractAppleWLocPayload, parseArpc: parseArpc,
-    coordToInt: coordToInt, normalizeConfig: normalizeConfig, loadConfig: loadConfig
+    DEFAULT_CONFIG: DEFAULT_CONFIG,
+    base64ToBytes: base64ToBytes,
+    bytesToBase64: bytesToBase64,
+    patchAppleWLocPayload: patchAppleWLocPayload,
+    spoofAppleResponse: spoofAppleResponse,
+    extractAppleWLocPayload: extractAppleWLocPayload,
+    parseArpc: parseArpc,
+    coordToInt: coordToInt,
+    normalizeConfig: normalizeConfig,
+    loadConfig: loadConfig
   };
 
-  if (typeof module !== "undefined" && module.exports) { module.exports = api; }
-  else { runQX(); }
-})();
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = api;
+  } else {
+    runQX();
+  }
+}());
