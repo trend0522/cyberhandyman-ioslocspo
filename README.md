@@ -1,6 +1,6 @@
 # iOS Location Spoofer
 
-自建了 worker 網頁，選點頁也在裡面：https://cyberhandyman-ioslocspo.cyberhandyman.workers.dev
+自建了 worker 網頁，選點頁：https://cyberhandyman-ioslocspo.trend0522.workers.dev/picker
 
 影片教學：https://youtu.be/EspuRlKWUxc
 
@@ -22,7 +22,7 @@
 不想用我的網址、或者想自己掌控？點下面的按鈕，登入 Cloudflare 後一路下一步，
 **30 秒**就能部署一份**屬於你自己的**選點頁（Cloudflare 免費額度完全夠用）：
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cyberhandyman/ios-location-spoofer/tree/main/stateless-picker/worker)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/trend0522/cyberhandyman-ioslocspo)
 
 部署完你會拿到一個自己的網址（形如 `https://xxx.你的帳號.workers.dev`）。
 它自帶全部模組檔案，首頁裡的「一鍵匯入」按鈕會**自動指向你自己的網域**，不用改任何程式碼。
@@ -48,14 +48,14 @@
 
 ## 📦 模組安裝位址
 
-推薦直接在[選點頁首頁](https://cyberhandyman-ioslocspo.cyberhandyman.workers.dev)點「一鍵匯入」。手動新增用下面的位址：
+推薦直接在[選點頁](https://cyberhandyman-ioslocspo.trend0522.workers.dev/picker)所屬的首頁點「一鍵匯入」。手動新增用下面的位址：
 
 | 客戶端 | 模組位址 |
 |---|---|
-| Shadowrocket / Surge / Egern | `https://raw.githubusercontent.com/cyberhandyman/ios-location-spoofer/main/ios-location-spoofer.sgmodule` |
-| Loon | `https://raw.githubusercontent.com/cyberhandyman/ios-location-spoofer/main/ios-location-spoofer.lnplugin` |
-| Stash | `https://raw.githubusercontent.com/cyberhandyman/ios-location-spoofer/main/ios-location-spoofer.stoverride` |
-| Quantumult X | `https://raw.githubusercontent.com/cyberhandyman/ios-location-spoofer/main/ios-location-spoofer.snippet` |
+| Shadowrocket / Surge / Egern | `https://cyberhandyman-ioslocspo.trend0522.workers.dev/ios-location-spoofer.sgmodule` |
+| Loon | `https://cyberhandyman-ioslocspo.trend0522.workers.dev/ios-location-spoofer.lnplugin` |
+| Stash | `https://cyberhandyman-ioslocspo.trend0522.workers.dev/ios-location-spoofer.stoverride` |
+| Quantumult X | `https://cyberhandyman-ioslocspo.trend0522.workers.dev/ios-location-spoofer.snippet` |
 
 **MITM 主機名稱**（若全部設定成功仍不生效，手動加入這四個網域）：
 

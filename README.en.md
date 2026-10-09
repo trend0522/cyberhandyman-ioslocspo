@@ -8,16 +8,16 @@ Use the HTTPS-decryption (MITM) feature of a proxy app to trick Apple's location
 
 > 📖 **New here?** The step-by-step walkthrough is Chinese-only for now → [使用教程.md](使用教程.md) (install, configure, verify, and troubleshooting).
 >
-> 🗺️ **Online map picker (stateless, shareable by many)** → **https://cyberhandyman-ioslocspo.cyberhandyman.workers.dev**
+> 🗺️ **Online map picker (stateless, shareable by many)** → **https://cyberhandyman-ioslocspo.trend0522.workers.dev/picker**
 >
-> Tap the map → auto altitude → one tap writes to your own device. Coordinates live only on **each device**, never on the server, so one URL can be shared by any number of people without overwriting each other. Pair it with the [**stateless module (stateless-picker/)**](stateless-picker/README.md) (setup & self-hosting there).
+> Tap the map → auto altitude → one tap writes to your own device. Coordinates live only on **each device**, never on the server, so one URL can be shared by any number of people without overwriting each other. Pair it with the [**stateless module**](README.md) (setup & self-hosting there).
 
 ## 🚀 Deploy your own picker in one click
 
 Don't want to rely on my URL? Click the button below, sign in to Cloudflare and click through —
 you'll have **your own** picker running in about **30 seconds** (well within the free tier):
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cyberhandyman/ios-location-spoofer/tree/main/stateless-picker/worker)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/trend0522/cyberhandyman-ioslocspo)
 
 You'll get your own URL (like `https://xxx.your-account.workers.dev`). It serves all the module
 files itself, and the "one-tap install" buttons on its home page **automatically point at your own
