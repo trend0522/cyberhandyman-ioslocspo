@@ -1,5 +1,5 @@
 name: iOS Location Spoofer (Stateless)
-desc: "任何販賣本專案／模組的都是騙子，請立即聯絡退款。iOS Location Spoofer 無狀態版 (Stash)"
+desc: "iOS Location Spoofer 無狀態版 (Stash)"
 homepage: https://cyberhandyman-ioslocspo.trend0522.workers.dev
 
 http:

@@ -1,5 +1,5 @@
 #!name=iOS Location Spoofer (Stateless)
-#!desc=任何販賣本專案／模組的都是騙子，請立即聯絡退款。無狀態版：座標寫入每台裝置各自的本機儲存、可公開共用、多人互不覆蓋。搭配選點頁使用（點地圖選位置 → 儲存到裝置）。適用於 Shadowrocket / Surge / Egern。
+#!desc=無狀態版：座標寫入每台裝置各自的本機儲存、可公開共用、多人互不覆蓋。搭配選點頁使用（點地圖選位置 → 儲存到裝置）。適用於 Shadowrocket / Surge / Egern。
 #!homepage=https://cyberhandyman-ioslocspo.trend0522.workers.dev
 
 [Script]

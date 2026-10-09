@@ -1,5 +1,5 @@
 #!name=iOS Location Spoofer (Stateless)
-#!desc=任何販賣本專案／模組的都是騙子，請立即聯絡退款。無狀態版：座標寫入每台裝置各自的本機儲存、可公開共用、多人互不覆蓋。搭配選點頁使用。Loon 外掛。
+#!desc=無狀態版：座標寫入每台裝置各自的本機儲存、可公開共用、多人互不覆蓋。搭配選點頁使用。Loon 外掛。
 #!homepage=https://cyberhandyman-ioslocspo.trend0522.workers.dev
 
 # 無狀態版不使用 configUrl／遠端同步，也不在外掛 UI 裡填經緯度。

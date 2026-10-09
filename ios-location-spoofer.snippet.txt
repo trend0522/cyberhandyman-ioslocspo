@@ -1,5 +1,5 @@
 #!name=iOS Location Spoofer (Stateless)
-#!desc=任何販賣本專案／模組的都是騙子，請立即聯絡退款。無狀態版：座標寫入本機 $prefs、可公開共用、多人互不覆蓋。QX 使用「重寫引用」（設定→重寫→引用，需資源解析器）。MITM 主機名稱需手動加入 設定→MITM。
+#!desc=無狀態版：座標寫入本機 $prefs、可公開共用、多人互不覆蓋。QX 使用「重寫引用」（設定→重寫→引用，需資源解析器）。MITM 主機名稱需手動加入 設定→MITM。
 #!homepage=https://cyberhandyman-ioslocspo.trend0522.workers.dev
 
 [rewrite_local]
