@@ -497,12 +497,39 @@ function getPageHtml() {
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"><\/script>
+<script>try{var th=localStorage.getItem('theme');if(th==='light'||th==='dark')document.documentElement.setAttribute('data-theme',th);}catch(e){}<\/script>
 <style>
 :root {
   --bg:#ffffff; --card:#ffffff; --card2:#f5f5f7; --line:#e5e5ea; --inset:#f2f2f7;
-  --cyan:#007aff; --cyan2:#0056b3; --green:#248a3d; --red:#d70015; --orange:#ff9500; /* ponytail: iOS tokens; red/green darkened for AA contrast on white */
+  --cyan:#0062d9; --cyan2:#0056b3; --green:#1e7a35; --red:#d70015; --orange:#ff9500; /* ponytail: iOS tokens darkened for AA (white-on-blue 5.60, white-on-green 5.40) */
   --txt:#1c1c1e; --muted:#6e6e73; --mono:#5856d6;
-  --blue:#007aff; --gray:#6e6e73;
+  --blue:#0062d9; --gray:#6e6e73;
+  --on-accent:#ffffff; --ck:#0062d9; --ph:#8e8e93; --hint:#4b5563; --barbg:rgba(255,255,255,.92); --press:#e5e5ea;
+  --err-txt:#3a3a3c; --focus-ring:rgba(0,98,217,.18); --scroll:#d1d1d6;
+}
+/* ---- dark theme: Apple system colors. data-theme wins over the media block below. ---- */
+html[data-theme=dark] {
+  --bg:#0b0b0d; --card:#1c1c1e; --card2:#16161a; --line:#38383a; --inset:#2c2c2e;
+  --cyan:#0a84ff; --cyan2:#409cff; --green:#30d158; --red:#ff453a; --orange:#ff9f0a;
+  --txt:#ebebf0; --muted:#a1a1a6; --mono:#8ab8ff;
+  --blue:#0a84ff; --gray:#a1a1a6;
+  --on-accent:#0b0b0d; --ck:#8ab8ff; --ph:#9a9aa0; --hint:#a1a1a6; --barbg:rgba(28,28,30,.92); --press:#3a3a3c;
+  --err-txt:#ebebf0; --focus-ring:rgba(10,132,255,.32); --scroll:#48484a;
+}
+@media (prefers-color-scheme:dark) {
+  html:not([data-theme]) {
+    --bg:#0b0b0d; --card:#1c1c1e; --card2:#16161a; --line:#38383a; --inset:#2c2c2e;
+    --cyan:#0a84ff; --cyan2:#409cff; --green:#30d158; --red:#ff453a; --orange:#ff9f0a;
+    --txt:#ebebf0; --muted:#a1a1a6; --mono:#8ab8ff;
+    --blue:#0a84ff; --gray:#a1a1a6;
+    --on-accent:#0b0b0d; --ck:#8ab8ff; --ph:#9a9aa0; --hint:#a1a1a6; --barbg:rgba(28,28,30,.92); --press:#3a3a3c;
+    --err-txt:#ebebf0; --focus-ring:rgba(10,132,255,.32); --scroll:#48484a;
+  }
+}
+/* dark map controls: keep edges + stronger shadow so they don't melt into tiles */
+html[data-theme=dark] .leaflet-bar, html[data-theme=dark] .lang-switch, html[data-theme=dark] .layer-toggle { box-shadow:0 2px 14px rgba(0,0,0,.55)!important; }
+@media (prefers-color-scheme:dark) {
+  html:not([data-theme]) .leaflet-bar, html:not([data-theme]) .lang-switch, html:not([data-theme]) .layer-toggle { box-shadow:0 2px 14px rgba(0,0,0,.55)!important; }
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
@@ -511,23 +538,23 @@ body {
   background:var(--bg);
   overscroll-behavior-y:none;
 }
-::placeholder { color:#98989d; }
+::placeholder { color:var(--ph); }
 ::-webkit-scrollbar { width:6px; height:6px; }
-::-webkit-scrollbar-thumb { background:#d1d1d6; border-radius:3px; }
+::-webkit-scrollbar-thumb { background:var(--scroll); border-radius:3px; }
 
 /* ---- 頂部列 ---- */
-.topbar { position:sticky; top:0; z-index:1200; display:flex; align-items:center; gap:10px; padding:9px 12px; background:rgba(255,255,255,.92); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); border-bottom:1px solid var(--line); font-size:11px; color:var(--muted); }
+.topbar { position:sticky; top:0; z-index:1200; display:flex; align-items:center; gap:10px; padding:9px 12px; background:var(--barbg); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); border-bottom:1px solid var(--line); font-size:11px; color:var(--muted); }
 .topbar .back { flex:none; color:var(--cyan); font-weight:700; text-decoration:none; }
 .topbar .topcredit { flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:center; }
 .topbar .topcredit .title { font-size:14px; font-weight:800; color:var(--txt); letter-spacing:.3px; }
 
 /* ---- 地圖 ---- */
-#map { height:56vh; width:100%; min-height:300px; background:#f2f2f7; border-bottom:1px solid var(--line); }
-.leaflet-container { background:#f2f2f7; }
-.leaflet-control-zoom a { background:rgba(255,255,255,.92)!important; color:var(--txt)!important; border-color:var(--line)!important; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
-.leaflet-control-zoom a:hover { background:#f2f2f7!important; }
+#map { height:56vh; width:100%; min-height:300px; background:var(--inset); border-bottom:1px solid var(--line); }
+.leaflet-container { background:var(--inset); }
+.leaflet-control-zoom a { background:var(--barbg)!important; color:var(--txt)!important; border-color:var(--line)!important; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
+.leaflet-control-zoom a:hover { background:var(--inset)!important; }
 .leaflet-bar { border:1px solid var(--line)!important; box-shadow:0 2px 12px rgba(0,0,0,.08)!important; }
-.leaflet-control-attribution { background:rgba(255,255,255,.8)!important; color:var(--muted)!important; }
+.leaflet-control-attribution { background:var(--barbg)!important; color:var(--muted)!important; }
 .leaflet-control-attribution a { color:var(--muted)!important; }
 
 .panel { padding:16px; max-width:600px; margin:0 auto; padding-bottom:calc(16px + env(safe-area-inset-bottom)); }
@@ -546,28 +573,30 @@ body {
 /* ---- 按鈕 ---- */
 .row { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
 .btn { flex:1; min-width:100px; padding:12px 16px; border:none; border-radius:11px; font-size:14px; font-weight:700; cursor:pointer; transition:all .15s; }
-.btn-primary { background:var(--cyan); color:#ffffff; }
+.btn-primary { background:var(--cyan); color:var(--on-accent); }
 .btn-primary:active { filter:brightness(.92); transform:scale(.97); }
+.btn-primary[disabled] { opacity:.35; }
 .btn-secondary { background:var(--card2); color:var(--txt); border:1px solid var(--line); font-weight:600; }
-.btn-secondary:active { background:#e5e5ea; transform:scale(.97); }
+.btn-secondary:active { background:var(--press); transform:scale(.97); }
 .btn-danger { background:transparent; color:var(--red); border:1px solid rgba(255,59,48,.35); }
 .btn-danger:active { background:rgba(255,59,48,.08); transform:scale(.97); }
-.btn.success { background:var(--green); color:#ffffff; border:none; }
+.btn.success { background:var(--green); color:var(--on-accent); border:none; }
 .btn-sm { flex:none; min-width:auto; min-height:40px; padding:6px 12px; font-size:12px; border-radius:8px; }
+:focus-visible { outline:2px solid var(--cyan); outline-offset:2px; }
 
 /* ---- 輸入框 ---- */
 .input-row { display:flex; gap:8px; margin-top:10px; }
 .input-row input { flex:1; padding:10px 12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; font-size:14px; color:var(--txt); outline:none; min-width:0; -webkit-appearance:none; transition:border-color .15s,box-shadow .15s; }
 .cvi { flex:1; min-width:0; width:100%; font-family:"SF Mono",ui-monospace,monospace; font-size:14px; color:var(--mono); padding:6px 10px; background:var(--inset); border:1px solid var(--line); border-radius:8px; outline:none; -webkit-appearance:none; transition:border-color .15s,box-shadow .15s; }
 .accfield input { width:100%; padding:8px 10px; background:var(--inset); border:1px solid var(--line); border-radius:8px; font-size:14px; color:var(--txt); outline:none; -webkit-appearance:none; transition:border-color .15s,box-shadow .15s; }
-.input-row input:focus, .cvi:focus, .accfield input:focus, .modal input:focus { border-color:var(--cyan); box-shadow:0 0 0 3px rgba(0,122,255,.12); }
+.input-row input:focus, .cvi:focus, .accfield input:focus, .modal input:focus { border-color:var(--cyan); box-shadow:0 0 0 3px var(--focus-ring); }
 .acc-row { display:flex; gap:8px; margin-bottom:6px; }
 .accfield { flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; }
 .acclbl { font-size:11px; color:var(--muted); }
 
 .status { font-size:12px; color:var(--muted); margin-top:8px; text-align:center; }
-.hint { font-size:11px; color:var(--muted); margin-top:8px; line-height:1.6; }
-.accnote { margin-top:10px; padding:11px 13px; background:var(--inset); border:1px solid var(--line); border-left:3px solid var(--cyan); border-radius:9px; font-size:11.5px; color:#3a3a3c; line-height:1.85; }
+.hint { font-size:13px; color:var(--hint); margin-top:8px; line-height:1.6; }
+.accnote { margin-top:10px; padding:11px 13px; background:var(--inset); border:1px solid var(--line); border-radius:9px; font-size:11.5px; color:var(--err-txt); line-height:1.85; }
 .accnote b { display:block; color:var(--cyan); font-weight:800; font-size:12px; margin-bottom:6px; letter-spacing:.3px; }
 .accnote code { font-family:"SF Mono",ui-monospace,monospace; color:var(--mono); font-size:11px; }
 .accnote em { color:var(--txt); font-style:normal; font-weight:800; }
@@ -576,12 +605,13 @@ body {
 /* ---- 清單 ---- */
 .search-results { margin-top:8px; max-height:260px; overflow-y:auto; }
 .search-item { padding:10px 12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; margin-bottom:6px; cursor:pointer; transition:all .15s; }
-.search-item:active { background:#e5e5ea; border-color:var(--cyan); }
+.search-item:active { background:var(--press); border-color:var(--cyan); }
 .search-item .si-name { font-size:14px; color:var(--txt); font-weight:600; }
 .search-item .si-sub { font-size:11px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
 .error-banner { background:rgba(255,59,48,.06); border:1px solid rgba(255,59,48,.3); border-left:4px solid var(--red); color:#3a3a3c; padding:14px 16px; border-radius:12px; margin-bottom:12px; font-size:13.5px; line-height:1.6; display:none; }
 .error-banner b { display:block; margin-bottom:4px; color:var(--red); font-size:14.5px; }
+.error-banner .btn { flex:none; margin-top:10px; }
 
 .toast { position:fixed; top:60px; left:50%; transform:translateX(-50%); background:rgba(28,28,30,.92); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); color:#ffffff; padding:11px 20px; border-radius:22px; font-size:14px; opacity:0; transition:opacity .3s; pointer-events:none; z-index:9999; max-width:90vw; text-align:center; box-shadow:0 8px 28px rgba(0,0,0,.15); }
 .toast.show { opacity:1; }
@@ -592,7 +622,7 @@ body {
 
 .fav-list { max-height:240px; overflow-y:auto; }
 .fav-item { display:flex; align-items:center; gap:8px; padding:10px 12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; margin-bottom:6px; cursor:pointer; transition:all .15s; }
-.fav-item:active { background:#e5e5ea; border-color:var(--cyan); }
+.fav-item:active { background:var(--press); border-color:var(--cyan); }
 .fav-item .fav-info { flex:1; min-width:0; }
 .fav-item .fav-name { font-size:14px; font-weight:600; color:var(--txt); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .fav-item .fav-coords { font-size:11px; color:var(--muted); font-family:"SF Mono",ui-monospace,monospace; margin-top:2px; }
@@ -606,23 +636,45 @@ body {
 /* ---- 彈窗 ---- */
 .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.4); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); z-index:10000; display:none; align-items:center; justify-content:center; padding:20px; }
 .modal-overlay.show { display:flex; }
-.modal { background:#ffffff; border:1px solid var(--line); border-radius:18px; padding:20px; width:100%; max-width:340px; box-shadow:0 20px 60px rgba(0,0,0,.15); }
+.modal { background:var(--card); border-radius:18px; padding:20px; width:100%; max-width:340px; box-shadow:0 6px 16px rgba(0,0,0,.15); }
 .modal h3 { font-size:17px; font-weight:700; margin-bottom:16px; text-align:center; color:var(--txt); }
 .modal input { width:100%; padding:12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; font-size:15px; color:var(--txt); outline:none; margin-bottom:12px; -webkit-appearance:none; transition:border-color .15s,box-shadow .15s; }
 .modal .modal-btns { display:flex; gap:8px; }
 .modal .modal-btns .btn { padding:12px; }
 
-/* ---- 地圖圖層切換 ---- */
-.layer-switch { position:absolute; top:10px; right:10px; z-index:1000; display:flex; gap:4px; max-width:calc(100vw - 110px); flex-wrap:wrap; background:rgba(255,255,255,.92); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:10px; padding:4px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
-.layer-btn { border:none; background:transparent; min-height:32px; padding:6px 10px; border-radius:7px; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; transition:all .15s; white-space:nowrap; }
-.layer-btn.active { background:var(--cyan); color:#ffffff; font-weight:700; }
-.layer-btn:active { transform:scale(.95); }
-.lang-switch { position:absolute; top:10px; left:10px; z-index:1000; display:flex; gap:2px; background:rgba(255,255,255,.92); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:10px; padding:4px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+/* ---- 地圖圖層切換（一顆圖層鈕開 popover，取代 6 顆平級 chip） ---- */
+.layer-pop { position:absolute; top:10px; right:10px; z-index:1000; }
+.layer-toggle { min-height:44px; padding:0 12px; display:flex; align-items:center; gap:6px; background:var(--barbg); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:10px; font-size:13px; font-weight:700; color:var(--txt); cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+.layer-toggle svg { width:15px; height:15px; flex:none; }
+.layer-popover { position:absolute; top:52px; right:0; z-index:1100; display:none; width:min(300px, calc(100vw - 24px)); max-height:min(60vh, 420px); overflow-y:auto; background:var(--barbg); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:12px; padding:6px; box-shadow:0 4px 10px rgba(0,0,0,.16); }
+.layer-popover.show { display:block; }
+.lp-group { font-size:11px; font-weight:800; letter-spacing:.5px; color:var(--muted); padding:8px 10px 4px; text-transform:uppercase; }
+.lp-item { display:flex; flex-direction:column; gap:2px; width:100%; text-align:left; border:none; background:transparent; padding:7px 10px; border-radius:8px; cursor:pointer; min-height:44px; justify-content:center; }
+.lp-item .lp-name { font-size:14px; font-weight:600; color:var(--txt); }
+.lp-item .lp-desc { font-size:13px; color:var(--muted); line-height:1.35; }
+.lp-item.active { background:var(--cyan); }
+.lp-item.active .lp-name, .lp-item.active .lp-desc { color:var(--on-accent); }
+.lang-switch { position:absolute; top:10px; left:10px; z-index:1000; display:flex; gap:2px; align-items:stretch; background:var(--barbg); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:10px; padding:4px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
 .lang-btn { border:none; background:transparent; min-height:32px; padding:6px 11px; border-radius:7px; font-size:12px; font-weight:700; color:var(--muted); cursor:pointer; transition:all .15s; }
-.lang-btn.active { background:var(--cyan); color:#ffffff; }
+.lang-btn.active { background:var(--cyan); color:var(--on-accent); }
 .lang-btn:active { transform:scale(.95); }
+.theme-btn { min-width:44px; min-height:44px; display:flex; align-items:center; justify-content:center; color:var(--txt); }
+.theme-btn svg { width:18px; height:18px; }
+.sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 
-@media(max-width:480px) { #map { height:50vh; } .panel { padding:12px; } .layer-btn { padding:5px 7px; font-size:11px; } }
+/* ---- 手機黏著列：座標讀數＋儲存（桌面不顯示；地圖僅佔畫面中上段，不會蓋到右下縮放鈕） ---- */
+.mobile-bar { display:none; position:fixed; left:0; right:0; bottom:0; z-index:1300; align-items:center; gap:10px; padding:8px 12px calc(8px + env(safe-area-inset-bottom)); background:var(--barbg); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); border-top:1px solid var(--line); box-shadow:0 -2px 12px rgba(0,0,0,.08); }
+.mobile-bar .mb-coords { flex:1; min-width:0; font-family:"SF Mono",ui-monospace,monospace; font-size:13px; color:var(--txt); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mobile-bar .mb-empty { color:var(--muted); font-family:inherit; }
+.mobile-bar .btn { flex:none; min-width:auto; min-height:44px; padding:10px 16px; }
+@media(max-width:768px) {
+  .mobile-bar { display:flex; }
+  .panel { padding-bottom:calc(90px + env(safe-area-inset-bottom)); }
+}
+html[data-theme=dark] .crow .ck { color:#64d2ff; }
+@media (prefers-color-scheme:dark) { html:not([data-theme]) .crow .ck { color:#64d2ff; } }
+
+@media(max-width:480px) { #map { height:50vh; } .panel { padding:12px 12px calc(90px + env(safe-area-inset-bottom)); } }
 </style>
 </head>
 <body>
@@ -635,18 +687,18 @@ body {
 <div class="lang-switch">
   <button class="lang-btn" data-lang="zh" onclick="setLang('zh')">繁中</button>
   <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+  <button class="lang-btn theme-btn" id="themeBtn" type="button" aria-label="主題" onclick="cycleTheme()"></button>
 </div>
-<div class="layer-switch">
-  <button class="layer-btn active" data-layer="satellite" data-i18n="layer_satellite" onclick="switchLayer('satellite')">衛星</button>
-  <button class="layer-btn" data-layer="wgs84" onclick="switchLayer('wgs84')">WGS84</button>
-  <button class="layer-btn" data-layer="amap" data-i18n="layer_amap" onclick="switchLayer('amap')">高德</button>
-  <button class="layer-btn" data-layer="voyager" data-i18n="layer_color" onclick="switchLayer('voyager')">彩色</button>
-  <button class="layer-btn" data-layer="standard" data-i18n="layer_standard" onclick="switchLayer('standard')">標準</button>
-  <button class="layer-btn" data-layer="dark" data-i18n="layer_dark" onclick="switchLayer('dark')">暗色</button>
+<div class="layer-pop">
+  <button class="layer-toggle" id="layerToggle" type="button" aria-expanded="false" aria-controls="layerPopover" data-i18n-al="layer_toggle_aria" aria-label="切換地圖底圖" onclick="toggleLayerPop()"></button>
+  <div class="layer-popover" id="layerPopover" role="group" aria-label="底圖"></div>
 </div>
 </div>
 <div class="panel">
-  <div class="error-banner" id="errorBanner" data-i18n-html="err_html"></div>
+  <div class="error-banner" id="errorBanner" role="alert">
+  <div id="errBody"></div>
+  <button class="btn btn-sm btn-secondary retry-btn" type="button" id="errRetry" data-i18n="retry" onclick="if(window.__errRetry)window.__errRetry()">重試</button>
+</div>
   <div class="card">
     <h3 data-i18n="choose_title">選擇目標位置</h3>
     <div class="coords" id="coords" data-i18n="coords_hint">點擊地圖或使用下方工具選擇位置</div>
@@ -696,7 +748,7 @@ body {
       <input id="urlInput" data-i18n-ph="paste_ph" data-i18n-al="paste_ph" placeholder="Apple/Google/高德/百度地圖連結或座標" />
       <button class="btn btn-secondary" style="flex:none;min-width:56px" data-i18n="parse" onclick="parseUrl()">解析</button>
     </div>
-    <div style="font-size:11px;color:var(--gray);margin-top:6px" data-i18n="paste_hint">支援 Apple Maps · Google Maps · 高德 · 百度 · 座標文字（自動換算為 WGS-84）</div>
+    <div style="font-size:13px;color:var(--hint);margin-top:6px" data-i18n="paste_hint">支援 Apple Maps · Google Maps · 高德 · 百度 · 座標文字（自動換算為 WGS-84）</div>
   </div>
   <div class="card">
     <h3 data-i18n="search_title">搜尋地點</h3>
@@ -708,10 +760,14 @@ body {
   </div>
   <div class="status" id="status" aria-live="polite">選好位置後點擊「儲存到裝置」寫入代理工具</div>
 </div>
-<div class="toast" id="toast" aria-live="polite"></div>
-<div class="modal-overlay" id="favModal" onclick="if(event.target===this)closeFavModal()">
+<div class="mobile-bar" id="mobileBar">
+  <span class="mb-coords mb-empty" id="mbCoords" data-i18n="pick_none">尚未選擇位置</span>
+  <button class="btn btn-primary" id="mbSave" type="button" disabled data-i18n="save_short" onclick="save()">儲存</button>
+</div>
+<div class="toast" id="toast" aria-live="polite" role="status"></div>
+<div class="modal-overlay" id="favModal" role="dialog" aria-modal="true" aria-labelledby="favModalTitle" onclick="if(event.target===this)closeFavModal()">
   <div class="modal">
-    <h3 data-i18n="modal_title">收藏此位置</h3>
+    <h3 id="favModalTitle" data-i18n="modal_title">收藏此位置</h3>
     <input id="favNameInput" data-i18n-ph="modal_ph" data-i18n-al="modal_ph" placeholder="輸入備註名稱（例如：公司、家）" maxlength="30" />
     <div style="font-size:12px;color:var(--gray);margin-bottom:12px;text-align:center" id="favModalCoords"></div>
     <div class="modal-btns">
@@ -740,6 +796,12 @@ const I18N = {
   zh: {
     title: 'iOS 虛擬定位',
     app_title: '定位修改',
+    layer_toggle_aria: '切換地圖底圖', lp_group_base: '底圖',
+    lp_satellite_d: 'ArcGIS 衛星實拍影像（預設）', lp_wgs84_d: 'OpenStreetMap 圖資，附隨機偏移提示', lp_amap_d: '高德地圖，中國道路與地名最完整',
+    lp_voyager_d: 'CARTO 淺色導航圖，疊加標點最清楚', lp_standard_d: 'CARTO 極簡淡色底圖', lp_dark_d: 'CARTO 深色底圖，夜間省眼',
+    retry: '重試', pick_none: '尚未選擇位置', op_failed: '操作未完成，詳情見下方提示',
+    err_first: '暫時讀不到裝置目前座標（不影響選點與儲存）。',
+    theme_auto: '自動（跟隨系統）', theme_light: '淺色', theme_dark: '深色', theme_btn_aria: '主題', theme_now: '目前主題：',
     layer_satellite: '衛星', layer_amap: '高德', layer_color: '彩色', layer_standard: '標準', layer_dark: '暗色',
     err_html: '<b>模組未生效</b>請檢查以下設定：<br>1. 已安裝並啟用 iOS Location Spoofer 模組<br>2. MITM 已開啟並信任憑證<br>3. MITM 主機名稱包含 gs-loc.apple.com<br>4. 當前網路已走代理',
     choose_title: '選擇目標位置',
@@ -791,6 +853,12 @@ const I18N = {
   en: {
     title: 'iOS Location Spoofer',
     app_title: 'Location Editor',
+    layer_toggle_aria: 'Change base map', lp_group_base: 'Base map',
+    lp_satellite_d: 'ArcGIS satellite imagery (default)', lp_wgs84_d: 'OpenStreetMap data, with GCJ-02 offset hint', lp_amap_d: 'AMap - best roads and POI names in China',
+    lp_voyager_d: 'CARTO Voyager - light labels, best with pins', lp_standard_d: 'CARTO Positron - minimal light base', lp_dark_d: 'CARTO Dark Matter - easy on the eyes at night',
+    retry: 'Retry', pick_none: 'No location selected', op_failed: 'Operation failed - see the notice below',
+    err_first: 'Could not read the device current location (point picking and saving still work).',
+    theme_auto: 'Auto (system)', theme_light: 'Light', theme_dark: 'Dark', theme_btn_aria: 'Theme', theme_now: 'Theme: ',
     layer_satellite: 'Satellite', layer_amap: 'Amap', layer_color: 'Color', layer_standard: 'Standard', layer_dark: 'Dark',
     err_html: '<b>Module not active</b>Please check the following:<br>1. The iOS Location Spoofer module is installed and enabled<br>2. MITM is on and the certificate is trusted<br>3. The MITM hostname list includes gs-loc.apple.com<br>4. The current network is routed through the proxy',
     choose_title: 'Choose target location',
@@ -863,7 +931,9 @@ function applyI18n() {
   document.querySelectorAll('[data-i18n-ph]').forEach(function(el){ el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
   document.querySelectorAll('[data-i18n-al]').forEach(function(el){ el.setAttribute('aria-label', t(el.getAttribute('data-i18n-al'))); });
   document.querySelectorAll('[data-i18n-html]').forEach(function(el){ el.innerHTML = t(el.getAttribute('data-i18n-html')); });
-  document.querySelectorAll('.lang-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-lang') === lang); });
+  document.querySelectorAll('.lang-btn[data-lang]').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-lang') === lang); });
+  renderLayerUI();
+  applyTheme();
   updateCoords();
   updateStatus();
   renderActive();
@@ -874,6 +944,36 @@ function setLang(l) {
   lang = l;
   try { localStorage.setItem(LANG_KEY, l); } catch(e) {}
   applyI18n();
+}
+
+/* ---- 主題三軌：auto → light → dark → auto（localStorage 'theme'，預設 auto 跟系統） ---- */
+const THEME_KEY = 'theme';
+let themePref = 'auto';
+try { const tv = localStorage.getItem(THEME_KEY); if (tv === 'light' || tv === 'dark') themePref = tv; } catch(e) {}
+const THEME_ICONS = {
+  auto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg>',
+  light: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg>',
+  dark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/></svg>'
+};
+function themeLabel(p) { return p === 'auto' ? t('theme_auto') : p === 'light' ? t('theme_light') : t('theme_dark'); }
+function applyTheme() {
+  if (themePref === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', themePref);
+  const darkNow = themePref === 'dark' || (themePref === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme:dark)').matches);
+  const meta = document.querySelector('meta[name=theme-color]');
+  if (meta) meta.setAttribute('content', darkNow ? '#0b0b0d' : '#ffffff');
+  const btn = document.getElementById('themeBtn');
+  if (btn) {
+    const label = themeLabel(themePref);
+    btn.innerHTML = THEME_ICONS[themePref] + '<span class="sr-only">' + escHtml(label) + '</span>';
+    btn.setAttribute('aria-label', t('theme_btn_aria') + ': ' + label);
+  }
+}
+function cycleTheme() {
+  themePref = themePref === 'auto' ? 'light' : themePref === 'light' ? 'dark' : 'auto';
+  try { localStorage.setItem(THEME_KEY, themePref); } catch(e) {}
+  applyTheme();
+  toast(t('theme_now') + themeLabel(themePref), 1500);
 }
 
 const map = L.map('map').setView([20, 0], 2); map.zoomControl.setPosition('bottomright');
@@ -887,11 +987,34 @@ const tiles = {
 };
 let currentLayer = tiles.satellite;
 currentLayer.addTo(map);
+let curLayerName = 'satellite';
+const LAYER_LABEL_KEY = { satellite:'layer_satellite', amap:'layer_amap', voyager:'layer_color', standard:'layer_standard', dark:'layer_dark' };
+const MAP_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="1 6 8 3 16 6 23 3 23 18 16 21 8 18 1 21"/><line x1="8" y1="3" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="21"/></svg>';
+function lpLabel(name) { return name === 'wgs84' ? 'WGS84' : t(LAYER_LABEL_KEY[name]); }
+function renderLayerUI() {
+  const btn = document.getElementById('layerToggle');
+  if (btn) btn.innerHTML = MAP_SVG + '<span>' + escHtml(lpLabel(curLayerName)) + '</span>';
+  const pop = document.getElementById('layerPopover');
+  if (pop) { pop.setAttribute('aria-label', t('lp_group_base')); pop.innerHTML = '<div class="lp-group">' + escHtml(t('lp_group_base')) + '</div>' +
+    Object.keys(tiles).map(function(n){
+      return '<button type="button" class="lp-item' + (n === curLayerName ? ' active' : '') + '" data-layer="' + n + '" onclick="switchLayer(&#39;' + n + '&#39;)">' +
+        '<span class="lp-name">' + escHtml(lpLabel(n)) + '</span>' +
+        '<span class="lp-desc">' + escHtml(t('lp_' + n + '_d')) + '</span></button>';
+    }).join(''); }
+}
+function toggleLayerPop(force) {
+  const pop = document.getElementById('layerPopover'), btn = document.getElementById('layerToggle');
+  const open = force !== undefined ? force : !pop.classList.contains('show');
+  pop.classList.toggle('show', open);
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
 function switchLayer(name) {
   map.removeLayer(currentLayer);
   currentLayer = tiles[name];
   currentLayer.addTo(map);
-  document.querySelectorAll('.layer-btn').forEach(b => b.classList.toggle('active', b.dataset.layer === name));
+  curLayerName = name;
+  renderLayerUI();
+  toggleLayerPop(false);
 }
 let marker = L.marker([lat, lon], {draggable:true});
 let markerShown = false;
@@ -919,6 +1042,13 @@ function setAltInput(v) {
 function updateCoords() {
   const grid = document.getElementById('coordGrid');
   const coords = document.getElementById('coords');
+  const mb = document.getElementById('mbCoords');
+  const mbs = document.getElementById('mbSave');
+  if (mb) {
+    mb.classList.toggle('mb-empty', !selected);
+    mb.textContent = selected ? (lon.toFixed(6) + ', ' + lat.toFixed(6)) : t('pick_none');
+  }
+  if (mbs) mbs.disabled = !selected;
   if (!selected) {
     grid.style.display = 'none';
     coords.style.display = '';
@@ -979,8 +1109,15 @@ function toast(msg, ms) {
   toastTimer = setTimeout(() => t2.classList.remove('show'), ms || 2500);
 }
 
-function showError(show) {
-  document.getElementById('errorBanner').style.display = show ? 'block' : 'none';
+function showError(show, retryFn, msg) {
+  const b = document.getElementById('errorBanner');
+  b.style.display = show ? 'block' : 'none';
+  if (show) {
+    document.getElementById('errBody').innerHTML = msg || t('err_html');
+    const rb = document.getElementById('errRetry');
+    rb.style.display = retryFn ? '' : 'none';
+    window.__errRetry = retryFn || null;
+  }
 }
 
 function copyText(str) {
@@ -1048,7 +1185,7 @@ function renderFavs() {
   el.innerHTML = favs.map((f, i) => {
     const isActive = activeLon !== null && Math.abs(f.lon - activeLon) < 0.000001 && Math.abs(f.lat - activeLat) < 0.000001;
     const altStr = (typeof f.alt === 'number') ? ('  ·  ' + f.alt + ' m') : '';
-    return '<div class="fav-item" onclick="loadFav(' + i + ')">' +
+    return '<div class="fav-item" role="button" tabindex="0" onclick="loadFav(' + i + ')" onkeydown="favKey(event,' + i + ')">' +
       '<div class="fav-info">' +
         '<div class="fav-name">' + escHtml(f.name) + '<\\/div>' +
         '<div class="fav-coords">' + f.lon.toFixed(6) + ', ' + f.lat.toFixed(6) + altStr + '<\\/div>' +
@@ -1059,6 +1196,8 @@ function renderFavs() {
   }).join('');
 }
 
+function favKey(e, i) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); loadFav(i); } }
+
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
@@ -1068,13 +1207,36 @@ function addFav() {
   var _fa = currentAlt();
   document.getElementById('favModalCoords').textContent = lon.toFixed(6) + ', ' + lat.toFixed(6) + (_fa !== null ? ('  ·  ' + _fa + ' m') : '');
   document.getElementById('favNameInput').value = '';
+  lastFocused = document.activeElement;
   document.getElementById('favModal').classList.add('show');
   setTimeout(() => document.getElementById('favNameInput').focus(), 100);
 }
 
 function closeFavModal() {
   document.getElementById('favModal').classList.remove('show');
+  if (lastFocused && lastFocused.focus) lastFocused.focus();
+  lastFocused = null;
 }
+
+var lastFocused = null;
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape') {
+    if (document.getElementById('favModal').classList.contains('show')) { closeFavModal(); return; }
+    if (document.getElementById('layerPopover').classList.contains('show')) { toggleLayerPop(false); document.getElementById('layerToggle').focus(); }
+    return;
+  }
+  if (e.key === 'Tab' && document.getElementById('favModal').classList.contains('show')) {
+    const f = [...document.querySelectorAll('#favModal button, #favModal input')].filter(el => el.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+});
+document.addEventListener('click', function(e){
+  const pop = document.getElementById('layerPopover');
+  if (pop && pop.classList.contains('show') && !pop.contains(e.target) && !e.target.closest('#layerToggle')) toggleLayerPop(false);
+});
 
 function confirmFav() {
   const name = document.getElementById('favNameInput').value.trim();
@@ -1154,7 +1316,11 @@ function queryActive() {
       renderActive();
       renderFavs();
     })
-    .catch(() => { activeStatus = 'failed'; renderActive(); });
+    .catch(() => {
+      activeStatus = 'failed'; renderActive();
+      showError(true, queryActive, '<b>' + escHtml(t('err_first')) + '</b>');
+      toast(t('op_failed'), 1500);
+    });
 }
 
 function clearActive() {
@@ -1168,9 +1334,9 @@ function clearActive() {
         renderActive();
         renderFavs();
         toast(t('dev_cleared'));
-      } else { toast(t('clear_failed', d.error || ''), 3000); }
+      } else { showError(true, clearActive, '<b>' + escHtml(t('clear_failed', d.error || '')) + '</b>'); toast(t('op_failed'), 1500); }
     })
-    .catch(() => { toast(t('clear_failed_cfg'), 3000); });
+    .catch(() => { showError(true, clearActive, '<b>' + escHtml(t('clear_failed_cfg')) + '</b>'); toast(t('op_failed'), 1500); });
 }
 
 let saveResetTimer = null;
@@ -1202,8 +1368,8 @@ async function save() {
     }
   } catch(e) {
     btn.textContent = t('save'); btn.className = 'btn btn-primary'; btn.disabled = false;
-    showError(true);
-    toast(t('save_failed'), 4000);
+    showError(true, save);
+    toast(t('op_failed'), 1500);
   }
 }
 
@@ -1280,9 +1446,9 @@ function restoreReal() {
         activeStatus = 'cleared'; savedLon = null;
         updateStatus(); renderActive(); renderFavs();
         toast(t('restored'), 30000);
-      } else { toast(t('clear_failed_cfg'), 3000); }
+      } else { showError(true, restoreReal, '<b>' + escHtml(t('clear_failed_cfg')) + '</b>'); toast(t('op_failed'), 1500); }
     })
-    .catch(() => toast(t('clear_failed_cfg'), 3000));
+    .catch(() => { showError(true, restoreReal, '<b>' + escHtml(t('clear_failed_cfg')) + '</b>'); toast(t('op_failed'), 1500); });
 }
 
 document.addEventListener('paste', e => {
@@ -1321,8 +1487,8 @@ function getLandingHtml() {
 <style>
 :root{
   --bg:#f4f6fa; --card:#ffffff; --card2:#f0f3f8; --line:#e4e8ef;
-  --brand:#2b7de9; --brand2:#1c62c4; --green:#248a3d; --green2:#059669;
-  --red:#ef4444; --amber:#f59e0b; --txt:#1e293b; --muted:#64748b; --mono:#0b8ce0;
+  --brand:#0062d9; --brand2:#1c62c4; --green:#1e7a35; --green2:#059669;
+  --red:#ef4444; --amber:#f59e0b; --txt:#1e293b; --muted:#5b6779; --mono:#0866a8;
 }
 *{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 body{
@@ -1484,7 +1650,7 @@ const MANIFEST = {
   display: "standalone",
   orientation: "portrait",
   background_color: "#f2f2f7",
-  theme_color: "#007aff",
+  theme_color: "#0062d9",
   icons: [
     { src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
     { src: "/icon-180.png", sizes: "180x180", type: "image/png", purpose: "any" },
