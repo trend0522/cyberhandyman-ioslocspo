@@ -6,7 +6,7 @@ Use the HTTPS-decryption (MITM) feature of a proxy app to trick Apple's location
 
 > ✅ **Synced with upstream [Yu9191/wloc v1.1](https://github.com/Yu9191/wloc/releases)**: random jitter radius (each fix is randomly offset within N metres of the target so results are never identical) · Hong Kong / Macau / Taiwan coordinates (Apple/Google emit WGS-84 there, so no more wrong GCJ reverse-shift) · Baidu link parsing · Amap `position=` lon/lat order fix. Set the jitter radius on the picker page.
 
-> 📖 **New here?** The step-by-step walkthrough is Chinese-only for now → [使用教程.md](使用教程.md) (install, configure, verify, and troubleshooting).
+> 📖 **New here?** The step-by-step walkthrough is Chinese-only for now → [使用教學.md](使用教學.md) (install, configure, verify, and troubleshooting).
 >
 > 🗺️ **Online map picker (stateless, shareable by many)** → **https://cyberhandyman-ioslocspo.trend0522.workers.dev/picker**
 >
@@ -105,7 +105,7 @@ ios-location-spoofer.stoverride     # Stash
 location-spoofer.js                 # Core script (shared by four platforms)
 location-spoofer-qx.js              # Quantumult X-specific
 location-spoofer-config.json        # Config sample
-使用教程.md                         # Step-by-step tutorial (Chinese)
+使用教學.md                         # Step-by-step tutorial (Chinese)
 location-picker/                    # Optional: web map picker (Node or Cloudflare Worker)
 location-picker/worker/             # Cloudflare Worker version (no VPS; supports Loon configUrl)
 ```
