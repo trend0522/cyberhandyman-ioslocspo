@@ -121,7 +121,27 @@ function qxsnippet(origin) {
 [mitm]
 hostname = gs-loc.apple.com, gs-loc-cn.apple.com, bluedot.is.autonavi.com, bluedot.is.autonavi.com.gds.alibabadns.com`;
 }
+// Full Shadowrocket .conf module (self-updating via update-url).
+// Deliberately WITHOUT ca-p12/ca-passphrase: those are per-device private certs and must never
+// be served publicly. Shadowrocket reuses/asks for the device's own CA on import.
+function shadowconf(origin) {
+  return String.raw`# Shadowrocket module (self-hosted): iOS Location Spoofer (Stateless)
+[General]
+update-url = ${origin}/ios-location-spoofer.conf
+
+[Script]
+# 1) 攔截 Apple /clls/wloc 回應，讀取本機 $persistentStore 的 latitude/longitude/altitude/enabled 等資料替換座標。
+#    argument 不帶經緯度/enabled —— 全部交給裝置端持久化控制（未選點 → enabled 預設 false → 透傳真實定位）。
+iOS Location Spoofer = type=http-response,pattern=^https?:\/\/(?:gs-loc(?:-cn)?\.apple\.com|bluedot\.is\.autonavi\.com(?:\.gds\.alibabadns\.com)?)\/clls\/wloc(?:\?.*)?$,requires-body=1,binary-body-mode=1,max-size=1048576,timeout=10,script-path=${origin}/location-spoofer.js,argument=mode=response&debug=false
+# 2) 攔截選點頁的儲存請求，把座標寫進本機持久化（不送往 Apple、不經過任何伺服器）。
+iLS Settings = type=http-request,pattern=^https?:\/\/gs-loc(?:-cn)?\.apple\.com\/ils-settings\/,requires-body=0,max-size=0,timeout=10,script-path=${origin}/location-settings.js
+
+[MITM]
+enable = true
+hostname = %APPEND% gs-loc.apple.com, gs-loc-cn.apple.com, bluedot.is.autonavi.com, bluedot.is.autonavi.com.gds.alibabadns.com`;
+}
 const TXT = { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=3600" };
+app.get("/ios-location-spoofer.conf", (c) => c.body(shadowconf(new URL(c.req.url).origin), 200, TXT));
 app.get("/ios-location-spoofer.sgmodule", (c) => c.body(sgmodule(new URL(c.req.url).origin), 200, TXT));
 app.get("/ios-location-spoofer.stoverride", (c) => c.body(stoverride(new URL(c.req.url).origin), 200, TXT));
 app.get("/ios-location-spoofer.lnplugin", (c) => c.body(lnplugin(new URL(c.req.url).origin), 200, TXT));
