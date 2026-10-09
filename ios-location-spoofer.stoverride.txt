@@ -1,6 +1,6 @@
 name: iOS Location Spoofer (Stateless)
-desc: "任何售卖本项目/模块的都是骗子，请立即联系退款。iOS Location Spoofer 无状态版 (Stash)"
-homepage: https://github.com/cyberhandyman/ios-location-spoofer
+desc: "任何販賣本專案／模組的都是騙子，請立即聯絡退款。iOS Location Spoofer 無狀態版 (Stash)"
+homepage: https://cyberhandyman-ioslocspo.trend0522.workers.dev
 
 http:
   mitm:
@@ -23,8 +23,8 @@ http:
 
 script-providers:
   ios-location-spoofer:
-    url: https://raw.githubusercontent.com/cyberhandyman/ios-location-spoofer/main/location-spoofer.js
+    url: https://cyberhandyman-ioslocspo.trend0522.workers.dev/location-spoofer.js
     interval: 86400
   ios-location-settings:
-    url: https://raw.githubusercontent.com/cyberhandyman/ios-location-spoofer/main/location-settings.js
+    url: https://cyberhandyman-ioslocspo.trend0522.workers.dev/location-settings.js
     interval: 86400

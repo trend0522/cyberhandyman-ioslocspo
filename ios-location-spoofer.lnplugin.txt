@@ -1,14 +1,14 @@
 #!name=iOS Location Spoofer (Stateless)
-#!desc=任何售卖本项目/模块的都是骗子，请立即联系退款。无状态版：坐标写入每台设备各自的本机存储、可公开共用、多人互不覆盖。搭配选点页使用。Loon 插件。
-#!homepage=https://github.com/cyberhandyman/ios-location-spoofer
+#!desc=任何販賣本專案／模組的都是騙子，請立即聯絡退款。無狀態版：座標寫入每台裝置各自的本機儲存、可公開共用、多人互不覆蓋。搭配選點頁使用。Loon 外掛。
+#!homepage=https://cyberhandyman-ioslocspo.trend0522.workers.dev
 
-# 无状态版不使用 configUrl / 远程同步，也不在插件 UI 里填经纬度。
-# 选点、切换、清除全部通过选点页完成（写入本机 $persistentStore）。
-# 未选点时 enabled 默认为 false，脚本直接放行真实定位。
+# 無狀態版不使用 configUrl／遠端同步，也不在外掛 UI 裡填經緯度。
+# 選點、切換、清除全部透過選點頁完成（寫入本機 $persistentStore）。
+# 未選點時 enabled 預設為 false，腳本直接放行真實定位。
 
 [Script]
-http-response ^https?:\/\/(?:gs-loc(?:-cn)?\.apple\.com|bluedot\.is\.autonavi\.com(?:\.gds\.alibabadns\.com)?)\/clls\/wloc(?:\?.*)?$ script-path=https://raw.githubusercontent.com/cyberhandyman/ios-location-spoofer/main/location-spoofer.js, requires-body=true, binary-body-mode=true, max-size=1048576, timeout=12, tag=iOS Location Spoofer, argument=mode=response&debug=false
-http-request ^https?:\/\/gs-loc(?:-cn)?\.apple\.com\/ils-settings\/ script-path=https://raw.githubusercontent.com/cyberhandyman/ios-location-spoofer/main/location-settings.js, requires-body=false, timeout=10, tag=iLS Settings
+http-response ^https?:\/\/(?:gs-loc(?:-cn)?\.apple\.com|bluedot\.is\.autonavi\.com(?:\.gds\.alibabadns\.com)?)\/clls\/wloc(?:\?.*)?$ script-path=https://cyberhandyman-ioslocspo.trend0522.workers.dev/location-spoofer.js, requires-body=true, binary-body-mode=true, max-size=1048576, timeout=12, tag=iOS Location Spoofer, argument=mode=response&debug=false
+http-request ^https?:\/\/gs-loc(?:-cn)?\.apple\.com\/ils-settings\/ script-path=https://cyberhandyman-ioslocspo.trend0522.workers.dev/location-settings.js, requires-body=false, timeout=10, tag=iLS Settings
 
 [MITM]
 hostname = gs-loc.apple.com, gs-loc-cn.apple.com, bluedot.is.autonavi.com, bluedot.is.autonavi.com.gds.alibabadns.com

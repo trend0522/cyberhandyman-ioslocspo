@@ -1,10 +1,10 @@
 #!name=iOS Location Spoofer (Stateless)
-#!desc=任何售卖本项目/模块的都是骗子，请立即联系退款。无状态版：坐标写入本机 $prefs、可公开共用、多人互不覆盖。QX 用「重写引用」(设置→重写→引用，需资源解析器)。MITM 主机名需手动加进 设置→MITM。
-#!homepage=https://github.com/cyberhandyman/ios-location-spoofer
+#!desc=任何販賣本專案／模組的都是騙子，請立即聯絡退款。無狀態版：座標寫入本機 $prefs、可公開共用、多人互不覆蓋。QX 使用「重寫引用」（設定→重寫→引用，需資源解析器）。MITM 主機名稱需手動加入 設定→MITM。
+#!homepage=https://cyberhandyman-ioslocspo.trend0522.workers.dev
 
 [rewrite_local]
-^https?:\/\/(?:gs-loc(?:-cn)?\.apple\.com|bluedot\.is\.autonavi\.com(?:\.gds\.alibabadns\.com)?)\/clls\/wloc(?:\?.*)?$ url script-response-body https://raw.githubusercontent.com/cyberhandyman/ios-location-spoofer/main/location-spoofer-qx.js
-^https?:\/\/gs-loc(?:-cn)?\.apple\.com\/ils-settings\/ url script-echo-response https://raw.githubusercontent.com/cyberhandyman/ios-location-spoofer/main/location-settings.js
+^https?:\/\/(?:gs-loc(?:-cn)?\.apple\.com|bluedot\.is\.autonavi\.com(?:\.gds\.alibabadns\.com)?)\/clls\/wloc(?:\?.*)?$ url script-response-body https://cyberhandyman-ioslocspo.trend0522.workers.dev/location-spoofer-qx.js
+^https?:\/\/gs-loc(?:-cn)?\.apple\.com\/ils-settings\/ url script-echo-response https://cyberhandyman-ioslocspo.trend0522.workers.dev/location-settings.js
 
 [mitm]
 hostname = gs-loc.apple.com, gs-loc-cn.apple.com, bluedot.is.autonavi.com, bluedot.is.autonavi.com.gds.alibabadns.com
