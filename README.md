@@ -6,7 +6,7 @@
 
 > 📺 YouTube：**[CyberHandyman 賽博工具人](https://www.youtube.com/@CyberHandyman/videos)** ｜ ✈️ Telegram 討論群：**[@cyberhandymancngroup](https://t.me/cyberhandymancngroup)**
 
-> ✅ **已同步上游 [Yu9191/wloc v1.1](https://github.com/Yu9191/wloc/releases)**：隨機擾動半徑（每次定位在目標點周圍隨機偏移，避免結果完全相同）· 港澳台座標（蘋果/Google 在港澳台直發 WGS-84，不再誤做 GCJ 反算）· 百度連結解析 · 高德 `position=` 經緯順序修正。擾動半徑在選點頁設定。
+> ✅ **已同步上游 [Yu9191/wloc v1.1](https://github.com/Yu9191/wloc/releases)**：隨機擾動半徑（每次定位在目標點周圍隨機偏移，避免結果完全相同）· 港澳臺座標（蘋果/Google 在港澳臺直發 WGS-84，不再誤做 GCJ 反算）· 百度連結解析 · 高德 `position=` 經緯順序修正。擾動半徑在選點頁設定。
 
 ---
 
@@ -36,9 +36,9 @@
 
 | | |
 |---|---|
-| 🇹🇼 小白保姆級圖文教學 | [使用教學.md](使用教程.md) |
-| 🇬🇧 English guide | [使用教學.en.md](使用教程.en.md) ｜ [README.en.md](README.en.md) |
-| 📲 iOS 捷徑（分享地圖連結直接改定位） | [見使用教學末尾](使用教程.md#-ios-快捷指令分享地图链接直接改定位) |
+| 🇹🇼 小白保姆級圖文教學 | [使用教學.md](使用教學.md) |
+| 🇬🇧 English guide | [使用教學.en.md](使用教學.en.md) ｜ [README.en.md](README.en.md) |
+| 📲 iOS 捷徑（分享地圖連結直接改定位） | [見使用教學末尾](使用教學.md#-ios-快捷指令分享地圖連結直接改定位) |
 
 **生效前提**：① 代理 App 已連線（開關/引擎開啟、非「直連」模式）② 開啟 HTTPS 解密(MITM) 並信任憑證 ③ 裝好對應客戶端的模組。
 
@@ -70,7 +70,7 @@ bluedot.is.autonavi.com.gds.alibabadns.com
 
 ## 🔍 原理
 
-iPhone 靠周圍 Wi-Fi、基地台的 BSSID 去問 Apple「這些裝置在哪」，Apple 回一份座標清單，iOS 據此算出自己的位置。
+iPhone 靠周圍 Wi-Fi、基地臺的 BSSID 去問 Apple「這些裝置在哪」，Apple 回一份座標清單，iOS 據此算出自己的位置。
 
 本模組在 **Apple 回座標的半路上**（`gs-loc.apple.com/clls/wloc`）把回應裡的座標全部改成你指定的數字，iPhone 算出來就是你選的地方。選點頁則透過 `ils-settings` 請求把座標寫進**你手機本機**的持久化儲存，模組讀取後生效——**全程不經過任何伺服器**。
 
