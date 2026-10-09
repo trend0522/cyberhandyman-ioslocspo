@@ -3,7 +3,7 @@ export function getPageHtml() {
 <html lang="zh-Hant-TW">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iOS 虛擬定位</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -13,22 +13,23 @@ export function getPageHtml() {
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icon-180.png">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"><\/script>
 <style>
 :root {
   --bg:#ffffff; --card:#ffffff; --card2:#f5f5f7; --line:#e5e5ea; --inset:#f2f2f7;
-  --cyan:#007aff; --cyan2:#0056b3; --green:#34c759; --red:#ff3b30; --orange:#ff9500;
-  --txt:#1c1c1e; --muted:#8e8e93; --mono:#5856d6;
-  --blue:#007aff; --gray:#8e8e93;
+  --cyan:#007aff; --cyan2:#0056b3; --green:#248a3d; --red:#d70015; --orange:#ff9500; /* ponytail: iOS tokens; red/green darkened for AA contrast on white */
+  --txt:#1c1c1e; --muted:#6e6e73; --mono:#5856d6;
+  --blue:#007aff; --gray:#6e6e73;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
   font-family:-apple-system,system-ui,"SF Pro TC","PingFang TC","Helvetica Neue",sans-serif;
   color:var(--txt);
   background:var(--bg);
+  overscroll-behavior-y:none;
 }
-::placeholder { color:#c7c7cc; }
+::placeholder { color:#98989d; }
 ::-webkit-scrollbar { width:6px; height:6px; }
 ::-webkit-scrollbar-thumb { background:#d1d1d6; border-radius:3px; }
 
@@ -70,7 +71,7 @@ body {
 .btn-danger { background:transparent; color:var(--red); border:1px solid rgba(255,59,48,.35); }
 .btn-danger:active { background:rgba(255,59,48,.08); transform:scale(.97); }
 .btn.success { background:var(--green); color:#ffffff; border:none; }
-.btn-sm { flex:none; min-width:auto; padding:6px 12px; font-size:12px; border-radius:8px; }
+.btn-sm { flex:none; min-width:auto; min-height:40px; padding:6px 12px; font-size:12px; border-radius:8px; }
 
 /* ---- 輸入框 ---- */
 .input-row { display:flex; gap:8px; margin-top:10px; }
@@ -114,7 +115,7 @@ body {
 .fav-item .fav-name { font-size:14px; font-weight:600; color:var(--txt); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .fav-item .fav-coords { font-size:11px; color:var(--muted); font-family:"SF Mono",ui-monospace,monospace; margin-top:2px; }
 .fav-item .fav-active { font-size:10px; color:var(--green); font-weight:700; margin-top:2px; }
-.fav-item .fav-del { flex:none; width:28px; height:28px; border:none; border-radius:50%; background:transparent; color:var(--red); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s; }
+.fav-item .fav-del { flex:none; width:38px; height:38px; border:none; border-radius:50%; background:transparent; color:var(--red); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s; }
 .fav-item .fav-del:hover { background:rgba(255,59,48,.08); }
 .fav-empty { text-align:center; color:var(--muted); font-size:13px; padding:16px 0; }
 .fav-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
@@ -130,12 +131,12 @@ body {
 .modal .modal-btns .btn { padding:12px; }
 
 /* ---- 地圖圖層切換 ---- */
-.layer-switch { position:absolute; top:10px; right:10px; z-index:1000; display:flex; gap:4px; background:rgba(255,255,255,.92); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:10px; padding:4px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
-.layer-btn { border:none; background:transparent; padding:6px 10px; border-radius:7px; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; transition:all .15s; white-space:nowrap; }
+.layer-switch { position:absolute; top:10px; right:10px; z-index:1000; display:flex; gap:4px; max-width:calc(100vw - 110px); flex-wrap:wrap; background:rgba(255,255,255,.92); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:10px; padding:4px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+.layer-btn { border:none; background:transparent; min-height:32px; padding:6px 10px; border-radius:7px; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; transition:all .15s; white-space:nowrap; }
 .layer-btn.active { background:var(--cyan); color:#ffffff; font-weight:700; }
 .layer-btn:active { transform:scale(.95); }
 .lang-switch { position:absolute; top:10px; left:10px; z-index:1000; display:flex; gap:2px; background:rgba(255,255,255,.92); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:10px; padding:4px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
-.lang-btn { border:none; background:transparent; padding:6px 11px; border-radius:7px; font-size:12px; font-weight:700; color:var(--muted); cursor:pointer; transition:all .15s; }
+.lang-btn { border:none; background:transparent; min-height:32px; padding:6px 11px; border-radius:7px; font-size:12px; font-weight:700; color:var(--muted); cursor:pointer; transition:all .15s; }
 .lang-btn.active { background:var(--cyan); color:#ffffff; }
 .lang-btn:active { transform:scale(.95); }
 
@@ -145,7 +146,7 @@ body {
 <body>
 <div class="topbar">
   <a class="back" href="/">← 首頁</a>
-  <span class="topcredit"><span class="title">iOS Location Spoofer 定位修改</span></span>
+  <span class="topcredit"><span class="title">iOS Location Spoofer <span data-i18n="app_title">定位修改</span></span></span>
 </div>
 <div style="position:relative">
 <div id="map"></div>
@@ -210,7 +211,7 @@ body {
   <div class="card">
     <h3 data-i18n="paste_title">貼上地圖連結</h3>
     <div class="input-row">
-      <input id="urlInput" data-i18n-ph="paste_ph" placeholder="Apple/Google/高德/百度地圖連結或座標" />
+      <input id="urlInput" data-i18n-ph="paste_ph" data-i18n-al="paste_ph" placeholder="Apple/Google/高德/百度地圖連結或座標" />
       <button class="btn btn-secondary" style="flex:none;min-width:56px" data-i18n="parse" onclick="parseUrl()">解析</button>
     </div>
     <div style="font-size:11px;color:var(--gray);margin-top:6px" data-i18n="paste_hint">支援 Apple Maps · Google Maps · 高德 · 百度 · 座標文字（自動換算為 WGS-84）</div>
@@ -218,18 +219,18 @@ body {
   <div class="card">
     <h3 data-i18n="search_title">搜尋地點</h3>
     <div class="input-row">
-      <input id="searchInput" data-i18n-ph="search_ph" placeholder="搜尋地名，按 Enter 列出候選（僅預覽，不改定位）" />
+      <input id="searchInput" data-i18n-ph="search_ph" data-i18n-al="search_ph" placeholder="搜尋地名，按 Enter 列出候選（僅預覽，不改定位）" />
       <button class="btn btn-secondary" style="flex:none;min-width:56px" data-i18n="search" onclick="searchPlace()">搜尋</button>
     </div>
     <div id="searchResults" class="search-results"></div>
   </div>
-  <div class="status" id="status">選好位置後點擊「儲存到裝置」寫入代理工具</div>
+  <div class="status" id="status" aria-live="polite">選好位置後點擊「儲存到裝置」寫入代理工具</div>
 </div>
-<div class="toast" id="toast"></div>
-<div class="modal-overlay" id="favModal">
+<div class="toast" id="toast" aria-live="polite"></div>
+<div class="modal-overlay" id="favModal" onclick="if(event.target===this)closeFavModal()">
   <div class="modal">
     <h3 data-i18n="modal_title">收藏此位置</h3>
-    <input id="favNameInput" data-i18n-ph="modal_ph" placeholder="輸入備註名稱（例如：公司、家）" maxlength="30" />
+    <input id="favNameInput" data-i18n-ph="modal_ph" data-i18n-al="modal_ph" placeholder="輸入備註名稱（例如：公司、家）" maxlength="30" />
     <div style="font-size:12px;color:var(--gray);margin-bottom:12px;text-align:center" id="favModalCoords"></div>
     <div class="modal-btns">
       <button class="btn btn-secondary" data-i18n="cancel" onclick="closeFavModal()">取消</button>
@@ -256,6 +257,7 @@ let savedLon = null, savedLat = null, savedTimeStr = '';
 const I18N = {
   zh: {
     title: 'iOS 虛擬定位',
+    app_title: '定位修改',
     layer_satellite: '衛星', layer_amap: '高德', layer_color: '彩色', layer_standard: '標準', layer_dark: '暗色',
     err_html: '<b>模組未生效</b>請檢查以下設定：<br>1. 已安裝並啟用 iOS Location Spoofer 模組<br>2. MITM 已開啟並信任憑證<br>3. MITM 主機名稱包含 gs-loc.apple.com<br>4. 當前網路已走代理',
     choose_title: '選擇目標位置',
@@ -306,6 +308,7 @@ const I18N = {
   },
   en: {
     title: 'iOS Location Spoofer',
+    app_title: 'Location Editor',
     layer_satellite: 'Satellite', layer_amap: 'Amap', layer_color: 'Color', layer_standard: 'Standard', layer_dark: 'Dark',
     err_html: '<b>Module not active</b>Please check the following:<br>1. The iOS Location Spoofer module is installed and enabled<br>2. MITM is on and the certificate is trusted<br>3. The MITM hostname list includes gs-loc.apple.com<br>4. The current network is routed through the proxy',
     choose_title: 'Choose target location',
@@ -376,6 +379,7 @@ function applyI18n() {
   document.title = t('title');
   document.querySelectorAll('[data-i18n]').forEach(function(el){ el.textContent = t(el.getAttribute('data-i18n')); });
   document.querySelectorAll('[data-i18n-ph]').forEach(function(el){ el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
+  document.querySelectorAll('[data-i18n-al]').forEach(function(el){ el.setAttribute('aria-label', t(el.getAttribute('data-i18n-al'))); });
   document.querySelectorAll('[data-i18n-html]').forEach(function(el){ el.innerHTML = t(el.getAttribute('data-i18n-html')); });
   document.querySelectorAll('.lang-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-lang') === lang); });
   updateCoords();
@@ -474,7 +478,7 @@ function fetchElevation(la, lo) {
   const seq = ++elevSeq;
   clearTimeout(elevTimer);
   elevTimer = setTimeout(function(){
-    fetch(ELEV_API + '?latitude=' + la + '&longitude=' + lo, { cache:'no-store' })
+    fetch(ELEV_API + '?latitude=' + la + '&longitude=' + lo, { cache:'no-store', signal:AbortSignal.timeout(8000) })
       .then(r => r.json())
       .then(d => {
         const e = (d && d.elevation && d.elevation.length && d.elevation[0] !== null) ? Math.round(d.elevation[0]) : null;
@@ -568,7 +572,7 @@ function renderFavs() {
         '<div class="fav-coords">' + f.lon.toFixed(6) + ', ' + f.lat.toFixed(6) + altStr + '<\\/div>' +
         (isActive ? '<div class="fav-active">' + escHtml(t('active_now')) + '<\\/div>' : '') +
       '<\\/div>' +
-      '<button class="fav-del" onclick="event.stopPropagation();delFav(' + i + ')" title="' + escHtml(t('del')) + '">\\u00d7<\\/button>' +
+      '<button class="fav-del" aria-label="' + escHtml(t('del')) + '" onclick="event.stopPropagation();delFav(' + i + ')" title="' + escHtml(t('del')) + '">\\u00d7<\\/button>' +
     '<\\/div>';
   }).join('');
 }
@@ -647,7 +651,7 @@ function renderActive() {
 function queryActive() {
   activeStatus = 'querying';
   renderActive();
-  fetch(SAVE_API + '?action=query', { method:'GET', mode:'cors', cache:'no-store' })
+  fetch(SAVE_API + '?action=query', { method:'GET', mode:'cors', cache:'no-store', signal:AbortSignal.timeout(8000) })
     .then(r => r.json())
     .then(d => {
       if (d.success && d.longitude && d.latitude) {
@@ -673,7 +677,7 @@ function queryActive() {
 
 function clearActive() {
   if (!confirm(t('clear_confirm'))) return;
-  fetch(SAVE_API + '?action=clear', { method:'GET', mode:'cors', cache:'no-store' })
+  fetch(SAVE_API + '?action=clear', { method:'GET', mode:'cors', cache:'no-store', signal:AbortSignal.timeout(8000) })
     .then(r => r.json())
     .then(d => {
       if (d.success) {
@@ -687,16 +691,18 @@ function clearActive() {
     .catch(() => { toast(t('clear_failed_cfg'), 3000); });
 }
 
+let saveResetTimer = null;
 async function save() {
   if (!selected) { toast(t('pick_first')); return; }
   const btn = document.getElementById('saveBtn');
+  clearTimeout(saveResetTimer);
   btn.textContent = t('saving'); btn.disabled = true;
   showError(false);
   try {
     let url = SAVE_API + '?lon=' + lon + '&lat=' + lat;
     const a = currentAlt(); if (a !== null) url += '&alt=' + a;
     url += '&hacc=' + haccVal() + '&vacc=' + vaccVal() + '&randomRadius=' + jitterVal();
-    const r = await fetch(url, { method: 'GET', mode: 'cors', cache: 'no-store' });
+    const r = await fetch(url, { method: 'GET', mode: 'cors', cache: 'no-store', signal: AbortSignal.timeout(8000) });
     const d = await r.json();
     if (d.success) {
       activeLon = lon; activeLat = lat; activeAcc = haccVal();
@@ -708,7 +714,7 @@ async function save() {
       renderActive();
       renderFavs();
       toast(t('saved_toast'), 30000);
-      setTimeout(() => { btn.textContent = t('save'); btn.className='btn btn-primary'; btn.disabled=false; }, 2500);
+      clearTimeout(saveResetTimer); saveResetTimer = setTimeout(() => { btn.textContent = t('save'); btn.className='btn btn-primary'; btn.disabled=false; }, 2500);
     } else {
       throw new Error(d.error || t('write_failed'));
     }
@@ -743,7 +749,7 @@ async function parseUrl() {
   if (!input) return toast(t('paste_first'));
   toast(t('parsing'));
   try {
-    const r = await fetch(PARSE_API + '?format=json&u=' + encodeURIComponent(input), { cache:'no-store' });
+    const r = await fetch(PARSE_API + '?format=json&u=' + encodeURIComponent(input), { cache:'no-store', signal:AbortSignal.timeout(8000) });
     const d = await r.json();
     if (d && typeof d.lat === 'number' && typeof d.lon === 'number') {
       moveTo(d.lat, d.lon, 15);
@@ -765,7 +771,7 @@ async function searchPlace() {
   const box = document.getElementById('searchResults');
   box.innerHTML = '<div class="search-item">' + escHtml(t('searching')) + '<\\/div>';
   try {
-    const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=6&q='+encodeURIComponent(q), { headers: { 'Accept-Language': (lang === 'zh' ? 'zh-TW' : 'en') } });
+    const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=6&q='+encodeURIComponent(q), { headers: { 'Accept-Language': (lang === 'zh' ? 'zh-TW' : 'en') }, signal:AbortSignal.timeout(8000) });
     searchResults = await r.json();
     if (!searchResults.length) { box.innerHTML = ''; toast(t('not_found', q), 3000); return; }
     box.innerHTML = searchResults.map(function(p, i){
@@ -784,7 +790,7 @@ function selectSearchResult(i) {
   toast((p.display_name || '').slice(0, 40));
 }
 function restoreReal() {
-  fetch(SAVE_API + '?action=clear', { method:'GET', mode:'cors', cache:'no-store' })
+  fetch(SAVE_API + '?action=clear', { method:'GET', mode:'cors', cache:'no-store', signal:AbortSignal.timeout(8000) })
     .then(r => r.json())
     .then(d => {
       if (d.success) {
@@ -798,6 +804,8 @@ function restoreReal() {
 }
 
 document.addEventListener('paste', e => {
+  const tgt = e.target;
+  if (tgt && tgt !== document.body && tgt.id !== 'urlInput') return;
   const text = (e.clipboardData||window.clipboardData).getData('text');
   if (text && (text.includes('map') || text.includes('loc') || text.includes('lnglat') || text.includes('baidu') || /[0-9]+\\.[0-9]+/.test(text))) {
     document.getElementById('urlInput').value = text;

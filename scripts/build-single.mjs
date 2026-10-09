@@ -2,7 +2,7 @@
 // "paste into the Cloudflare dashboard" deploy path. It inlines every src/*.js and then
 // inlines src/index.js itself (imports stripped, Hono replaced by a tiny shim), so the
 // router is defined ONCE in index.js and the single-file can never drift. Regenerate:
-//   cd worker && node scripts/build-single.mjs
+//   node scripts/build-single.mjs   (from the repo root)
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -18,8 +18,8 @@ const readIndex = () =>
 
 const header = `/**
  * iOS Location Spoofer — stateless picker, single-file Cloudflare Worker (AUTO-GENERATED).
- * DO NOT EDIT BY HAND. Source of truth: worker/src/*. Regenerate:
- *   cd worker && node scripts/build-single.mjs
+ * DO NOT EDIT BY HAND. Source of truth: src/*.js (repo root). Regenerate:
+ *   node scripts/build-single.mjs
  * Mirrors the Hono build (src/index.js) exactly: landing + /picker + /api/parse +
  * PWA manifest/icons + self-hosted module scripts & manifests. Stateless.
  */`;
@@ -68,4 +68,4 @@ const out = [
 ].join("\n\n");
 
 writeFileSync(path.join(dir, "single-file-worker.js"), out);
-console.log("wrote worker/single-file-worker.js (" + out.length + " bytes)");
+console.log("wrote single-file-worker.js (" + out.length + " bytes)");
