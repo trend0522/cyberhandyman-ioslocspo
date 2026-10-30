@@ -215,11 +215,15 @@ app.post("/tg", async (c) => {
     const reply =
       "📍 iOS 虛擬定位 · 選點首頁\n" + origin + "/\n\n" +
       "▶️ 影片教學：https://youtu.be/EspuRlKWUxc";
-    await fetch("https://api.telegram.org/bot" + token + "/sendMessage", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text: reply, disable_web_page_preview: false }),
-    });
+    // 失敗也回 200，避免 Telegram 對同一則更新無限重送
+    try {
+      await fetch("https://api.telegram.org/bot" + token + "/sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: chatId, text: reply, disable_web_page_preview: false }),
+        signal: AbortSignal.timeout(8000),
+      });
+    } catch (e) { console.error("tg sendMessage failed: " + e); }
   }
   return c.text("ok", 200);
 });
