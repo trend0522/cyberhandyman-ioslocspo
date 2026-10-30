@@ -118,7 +118,7 @@
 
   if (!originAllowed(allowedOrigin, req.headers)) {
     status = 403;
-    result = { success: false, error: "forbidden origin" };
+    result = { success: false, error: "來源網域不允許" };
   } else if (action === "query") {
     var qlat = readKey("latitude");
     var qlon = readKey("longitude");
@@ -139,7 +139,7 @@
         enabled: String(qen) === "true"
       };
     } else {
-      result = { success: false, error: "No saved coordinates" };
+      result = { success: false, error: "尚未儲存座標" };
     }
   } else if (action === "clear") {
     writeKey("enabled", "false");
@@ -152,7 +152,7 @@
     var vacc = finiteNum(q.vacc != null ? q.vacc : q.verticalAccuracy);
     var rr = finiteNum(q.rr != null ? q.rr : q.randomRadius);
     if (isFinite(lon) && isFinite(lat) && (Math.abs(lat) > 90 || Math.abs(lon) > 180)) {
-      result = { success: false, error: "lat/lon out of range" };
+      result = { success: false, error: "經緯度超出範圍" };
     } else if (isFinite(lon) && isFinite(lat)) {
       writeKey("latitude", String(lat));
       writeKey("longitude", String(lon));
@@ -168,7 +168,7 @@
       if (isFinite(vacc)) result.verticalAccuracy = Math.round(vacc);
       if (isFinite(rr)) result.randomRadius = Math.max(0, Math.round(rr));
     } else {
-      result = { success: false, error: "missing lat/lon parameters" };
+      result = { success: false, error: "缺少 lat/lon 參數" };
     }
   }
 
