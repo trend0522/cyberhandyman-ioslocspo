@@ -48,7 +48,14 @@ app.get("/favicon.ico", (c) => c.body(ICON_SVG, 200, { "Content-Type": "image/sv
    whatever domain served it (workers.dev URL or a custom domain). */
 const JS_HEADERS = { "Content-Type": "text/javascript; charset=utf-8", "Cache-Control": "public, max-age=3600" };
 app.get("/location-spoofer.js", (c) => c.body(b64ToBytes(LOCATION_SPOOFER_B64), 200, JS_HEADERS));
-app.get("/location-settings.js", (c) => c.body(b64ToBytes(LOCATION_SETTINGS_B64), 200, JS_HEADERS));
+// Inject this worker's own origin so the on-device settings script only accepts save/query
+// requests coming from this picker (CSRF guard; see location-settings.js).
+app.get("/location-settings.js", (c) => {
+  const src = new TextDecoder().decode(b64ToBytes(LOCATION_SETTINGS_B64));
+  const origin = new URL(c.req.url).origin;
+  const out = src.replace('/*__ILS_ALLOWED_ORIGIN__*/""', JSON.stringify(origin));
+  return c.body(out, 200, JS_HEADERS);
+});
 app.get("/location-spoofer-qx.js", (c) => c.body(b64ToBytes(LOCATION_SPOOFER_QX_B64), 200, JS_HEADERS));
 
 function sgmodule(origin) {
@@ -219,7 +226,7 @@ app.post("/tg", async (c) => {
 
 app.onError((e, c) => {
   console.error(`${e}`);
-  return c.text(`${e}`, 500);
+  return c.text("Internal Server Error", 500);
 });
 
 /* ---- Geo-restriction: block mainland China (CN); allow everywhere else ---- */

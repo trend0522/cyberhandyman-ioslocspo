@@ -5,9 +5,11 @@
     "deploy": "npx wrangler deploy --minify",
     "build:single": "node scripts/build-single.mjs",
     "icons": "python3 scripts/gen_icons.py",
-    "gen:modules": "node scripts/gen-modules.mjs"
+    "gen:modules": "node scripts/gen-modules.mjs",
+    "test": "node --test test/*.test.mjs"
   },
   "dependencies": {
     "hono": "^4.10.6"
-  },"name": "cyberhandyman-ioslocspo"
+  },
+  "name": "cyberhandyman-ioslocspo"
 }

@@ -407,8 +407,11 @@
     var hasResponse = typeof $response !== "undefined";
 
     if (hasResponse) {
-      var config = loadConfig();
+      var config = null;
       try {
+        // loadConfig() 在 try 內：$prefs 內容損壞（如緯度超出範圍）時 normalizeConfig 會丟例外，
+        // 必須仍呼叫 $done({}) 放行原始回應，否則 QX 會一直等待腳本結束。
+        config = loadConfig();
         if (!config.enabled) { $done({}); return; }
         // QX v1.0.19+ 起二进制响应走 $response.bodyBytes(ArrayBuffer)，
         // $response.body 对二进制是空/乱码文本。详见 crossutility/Quantumult-X
@@ -432,7 +435,7 @@
           )
         });
       } catch (err) {
-        if (config.debug) console.log("Location spoofer failed: " + err.message);
+        if (config && config.debug) console.log("Location spoofer failed: " + err.message);
         $done({});
       }
     } else {
