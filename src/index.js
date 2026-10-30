@@ -48,7 +48,14 @@ app.get("/favicon.ico", (c) => c.body(ICON_SVG, 200, { "Content-Type": "image/sv
    whatever domain served it (workers.dev URL or a custom domain). */
 const JS_HEADERS = { "Content-Type": "text/javascript; charset=utf-8", "Cache-Control": "public, max-age=3600" };
 app.get("/location-spoofer.js", (c) => c.body(b64ToBytes(LOCATION_SPOOFER_B64), 200, JS_HEADERS));
-app.get("/location-settings.js", (c) => c.body(b64ToBytes(LOCATION_SETTINGS_B64), 200, JS_HEADERS));
+// Inject this worker's own origin so the on-device settings script only accepts save/query
+// requests coming from this picker (CSRF guard; see location-settings.js).
+app.get("/location-settings.js", (c) => {
+  const src = new TextDecoder().decode(b64ToBytes(LOCATION_SETTINGS_B64));
+  const origin = new URL(c.req.url).origin;
+  const out = src.replace('/*__ILS_ALLOWED_ORIGIN__*/""', JSON.stringify(origin));
+  return c.body(out, 200, JS_HEADERS);
+});
 app.get("/location-spoofer-qx.js", (c) => c.body(b64ToBytes(LOCATION_SPOOFER_QX_B64), 200, JS_HEADERS));
 
 function sgmodule(origin) {
@@ -208,18 +215,22 @@ app.post("/tg", async (c) => {
     const reply =
       "📍 iOS 虛擬定位 · 選點首頁\n" + origin + "/\n\n" +
       "▶️ 影片教學：https://youtu.be/EspuRlKWUxc";
-    await fetch("https://api.telegram.org/bot" + token + "/sendMessage", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text: reply, disable_web_page_preview: false }),
-    });
+    // 失敗也回 200，避免 Telegram 對同一則更新無限重送
+    try {
+      await fetch("https://api.telegram.org/bot" + token + "/sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: chatId, text: reply, disable_web_page_preview: false }),
+        signal: AbortSignal.timeout(8000),
+      });
+    } catch (e) { console.error("tg sendMessage failed: " + e); }
   }
   return c.text("ok", 200);
 });
 
 app.onError((e, c) => {
   console.error(`${e}`);
-  return c.text(`${e}`, 500);
+  return c.text("Internal Server Error", 500);
 });
 
 /* ---- Geo-restriction: block mainland China (CN); allow everywhere else ---- */

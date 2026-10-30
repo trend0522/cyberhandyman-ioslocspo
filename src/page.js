@@ -685,7 +685,13 @@ function copyParams(btn) {
 }
 
 function getFavs() {
-  try { return JSON.parse(localStorage.getItem(FAV_KEY)) || []; } catch(e) { return []; }
+  try {
+    const arr = JSON.parse(localStorage.getItem(FAV_KEY));
+    if (!Array.isArray(arr)) return [];
+    // 過濾損壞的收藏（非數字或超出範圍的座標），避免 toFixed 等處拋錯
+    return arr.filter(f => f && typeof f.lat === 'number' && typeof f.lon === 'number' &&
+      Number.isFinite(f.lat) && Number.isFinite(f.lon) && Math.abs(f.lat) <= 90 && Math.abs(f.lon) <= 180);
+  } catch(e) { return []; }
 }
 function saveFavs(favs) {
   localStorage.setItem(FAV_KEY, JSON.stringify(favs));
@@ -907,7 +913,7 @@ function parseLocalCoords(text) {
   const a = parseFloat(m[1]), b = parseFloat(m[2]);
   if (Math.abs(a) <= 90 && Math.abs(b) <= 180) return { lat: a, lon: b };
   if (Math.abs(b) <= 90 && Math.abs(a) <= 180) return { lat: b, lon: a };
-  return { lat: a, lon: b };
+  return null;
 }
 
 async function parseUrl() {

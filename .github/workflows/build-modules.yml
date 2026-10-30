@@ -9,6 +9,8 @@ on:
       - "location-settings.js"
       - "location-spoofer-qx.js"
       - "scripts/gen-modules.mjs"
+      - "scripts/build-single.mjs"
+      - "src/**"
       - ".github/workflows/build-modules.yml"
   workflow_dispatch:
 
@@ -31,17 +33,23 @@ jobs:
           node-version: "20"
 
       - name: Regenerate modules.js
-        run: node scripts/gen-modules.mjs
+        run: npm run gen:modules
+
+      - name: Rebuild single-file-worker.js
+        run: npm run build:single
+
+      - name: Run tests
+        run: npm test
 
       - name: Check for changes
         id: check
         run: |
-          if git diff --quiet src/modules.js; then
+          if git diff --quiet src/modules.js single-file-worker.js; then
             echo "changed=false" >> $GITHUB_OUTPUT
-            echo "modules.js 沒有變化"
+            echo "modules.js / single-file-worker.js 沒有變化"
           else
             echo "changed=true" >> $GITHUB_OUTPUT
-            echo "modules.js 有變化"
+            echo "modules.js / single-file-worker.js 有變化"
           fi
 
       - name: Commit and push
@@ -49,6 +57,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/modules.js
-          git commit -m "chore: 自動重新產生 modules.js [skip ci]"
+          git add src/modules.js single-file-worker.js
+          git commit -m "chore: 自動重新產生 modules.js 與 single-file-worker.js [skip ci]"
           git push

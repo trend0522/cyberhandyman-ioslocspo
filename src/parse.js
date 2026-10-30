@@ -109,7 +109,24 @@ function googleName(str) {
 const FETCH_TIMEOUT_MS = 8000;
 const MAX_BODY_BYTES = 512 * 1024;
 
-function isFetchable(u) {
+// 輸入 u 的長度上限（2 KB）。正常的地圖分享連結遠小於此。
+export const MAX_INPUT_LEN = 2048;
+
+// 只允許跟隨這些地圖服務的網域（含子網域），每一跳重新導向都要檢查，
+// 避免 /api/parse 被當成任意網址的開放代理。
+const ALLOWED_HOST_SUFFIXES = ["apple.com", "amap.com", "baidu.com", "goo.gl", "google.com"];
+
+export function isAllowedHost(hostname) {
+  const h = String(hostname || "").toLowerCase().replace(/\.$/, "");
+  if (!h) return false;
+  for (const d of ALLOWED_HOST_SUFFIXES) {
+    if (h === d || h.endsWith("." + d)) return true;
+  }
+  // Google 各地區網域：google.com.tw / google.co.jp / google.de …
+  return /(^|\.)google\.(?:com?\.)?[a-z]{2}$/.test(h);
+}
+
+export function isFetchable(u) {
   let url;
   try {
     url = new URL(u);
@@ -120,6 +137,7 @@ function isFetchable(u) {
   const h = url.hostname.toLowerCase();
   if (h === "localhost" || h.endsWith(".local") || h.endsWith(".internal")) return false;
   if (/^\d{1,3}(\.\d{1,3}){3}$/.test(h) || h.startsWith("[")) return false; // IP 字面值
+  if (!isAllowedHost(h)) return false;
   return true;
 }
 
@@ -161,6 +179,7 @@ function isBaiduHost(u) {
 export async function parseCoords(raw) {
   const text = String(raw || "").trim();
   if (!text) throw new Error("空輸入");
+  if (text.length > MAX_INPUT_LEN) throw new Error("輸入過長（上限 2KB）");
 
   const urlMatch = text.match(/https?:\/\/[^\s'"<>]+/i);
   let target = urlMatch ? urlMatch[0] : text;

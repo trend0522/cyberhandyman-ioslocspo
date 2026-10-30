@@ -484,12 +484,15 @@
       throw new Error("invalid longitude");
     }
     // Apply the random offset last, once per response, so every patched WiFi/cell
-    // location in this response shares the same jittered point.
-    if (cfg.randomRadius > 0) {
+    // location in this response shares the same jittered point. normalizeConfig is called
+    // again on an already-normalized config (spoofAppleResponse / spoofArpcRequest), so
+    // skip the jitter when it was already applied — otherwise the offset is stacked twice.
+    if (cfg.randomRadius > 0 && cfg.jitterApplied !== true) {
       var jittered = applyRandomRadius(cfg.latitude, cfg.longitude, cfg.randomRadius);
       cfg.latitude = jittered.latitude;
       cfg.longitude = jittered.longitude;
       cfg.randomDistance = jittered.distance;
+      cfg.jitterApplied = true;
     }
     return cfg;
   }
