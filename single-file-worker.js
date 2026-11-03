@@ -600,7 +600,8 @@ body {
 .btn-danger { background:transparent; color:var(--red); border:1px solid rgba(255,59,48,.35); }
 .btn-danger:active { background:rgba(255,59,48,.08); transform:scale(.97); }
 .btn.success { background:var(--green); color:var(--on-accent); border:none; }
-.btn-sm { flex:none; min-width:auto; min-height:40px; padding:6px 12px; font-size:12px; border-radius:8px; }
+.btn-sm { flex:none; min-width:auto; min-height:44px; padding:6px 12px; font-size:12px; border-radius:8px; }
+.btn-minw { flex:none; min-width:56px; }
 :focus-visible { outline:2px solid var(--cyan); outline-offset:2px; }
 
 /* ---- 輸入框 ---- */
@@ -623,12 +624,12 @@ body {
 
 /* ---- 清單 ---- */
 .search-results { margin-top:8px; max-height:260px; overflow-y:auto; }
-.search-item { padding:10px 12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; margin-bottom:6px; cursor:pointer; transition:all .15s; }
+.search-item { min-height:44px; padding:10px 12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; margin-bottom:6px; cursor:pointer; transition:all .15s; }
 .search-item:active { background:var(--press); border-color:var(--cyan); }
 .search-item .si-name { font-size:14px; color:var(--txt); font-weight:600; }
 .search-item .si-sub { font-size:11px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
-.error-banner { background:rgba(255,59,48,.06); border:1px solid rgba(255,59,48,.3); border-left:4px solid var(--red); color:#3a3a3c; padding:14px 16px; border-radius:12px; margin-bottom:12px; font-size:13.5px; line-height:1.6; display:none; }
+.error-banner { background:rgba(255,59,48,.06); border:1px solid rgba(255,59,48,.3); color:#3a3a3c; padding:14px 16px; border-radius:12px; margin-bottom:12px; font-size:13.5px; line-height:1.6; display:none; }
 .error-banner b { display:block; margin-bottom:4px; color:var(--red); font-size:14.5px; }
 .error-banner .btn { flex:none; margin-top:10px; }
 
@@ -640,13 +641,13 @@ body {
 .active-loc .value { font-family:"SF Mono",ui-monospace,monospace; font-size:13px; color:var(--mono); }
 
 .fav-list { max-height:240px; overflow-y:auto; }
-.fav-item { display:flex; align-items:center; gap:8px; padding:10px 12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; margin-bottom:6px; cursor:pointer; transition:all .15s; }
+.fav-item { display:flex; align-items:center; gap:8px; min-height:44px; padding:10px 12px; background:var(--inset); border:1px solid var(--line); border-radius:10px; margin-bottom:6px; cursor:pointer; transition:all .15s; }
 .fav-item:active { background:var(--press); border-color:var(--cyan); }
 .fav-item .fav-info { flex:1; min-width:0; }
 .fav-item .fav-name { font-size:14px; font-weight:600; color:var(--txt); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .fav-item .fav-coords { font-size:11px; color:var(--muted); font-family:"SF Mono",ui-monospace,monospace; margin-top:2px; }
 .fav-item .fav-active { font-size:10px; color:var(--green); font-weight:700; margin-top:2px; }
-.fav-item .fav-del { flex:none; width:38px; height:38px; border:none; border-radius:50%; background:transparent; color:var(--red); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s; }
+.fav-item .fav-del { flex:none; width:44px; height:44px; border:none; border-radius:50%; background:transparent; color:var(--red); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s; }
 .fav-item .fav-del:hover { background:rgba(255,59,48,.08); }
 .fav-empty { text-align:center; color:var(--muted); font-size:13px; padding:16px 0; }
 .fav-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
@@ -674,7 +675,7 @@ body {
 .lp-item.active { background:var(--cyan); }
 .lp-item.active .lp-name, .lp-item.active .lp-desc { color:var(--on-accent); }
 .lang-switch { position:absolute; top:10px; left:10px; z-index:1000; display:flex; gap:2px; align-items:stretch; background:var(--barbg); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:10px; padding:4px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
-.lang-btn { border:none; background:transparent; min-height:32px; padding:6px 11px; border-radius:7px; font-size:12px; font-weight:700; color:var(--muted); cursor:pointer; transition:all .15s; }
+.lang-btn { border:none; background:transparent; min-height:44px; padding:6px 11px; border-radius:7px; font-size:12px; font-weight:700; color:var(--muted); cursor:pointer; transition:all .15s; }
 .lang-btn.active { background:var(--cyan); color:var(--on-accent); }
 .lang-btn:active { transform:scale(.95); }
 .theme-btn { min-width:44px; min-height:44px; display:flex; align-items:center; justify-content:center; color:var(--txt); }
@@ -765,7 +766,7 @@ html[data-theme=dark] .crow .ck { color:#64d2ff; }
     <h3 data-i18n="paste_title">貼上地圖連結</h3>
     <div class="input-row">
       <input id="urlInput" data-i18n-ph="paste_ph" data-i18n-al="paste_ph" placeholder="Apple/Google/高德/百度地圖連結或座標" />
-      <button class="btn btn-secondary" style="flex:none;min-width:56px" data-i18n="parse" onclick="parseUrl()">解析</button>
+      <button class="btn btn-secondary btn-minw" data-i18n="parse" onclick="parseUrl()">解析</button>
     </div>
     <div style="font-size:13px;color:var(--hint);margin-top:6px" data-i18n="paste_hint">支援 Apple Maps · Google Maps · 高德 · 百度 · 座標文字（自動換算為 WGS-84）</div>
   </div>
